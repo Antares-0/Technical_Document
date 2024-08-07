@@ -53,6 +53,7 @@
 参考文章：
 1. https://blog.csdn.net/qq_28369007/article/details/136800482
 2. https://blog.csdn.net/qq_38322527/article/details/124415916
+3. https://docs.oracle.com/javase/8/docs/technotes/guides/jpda/architecture.html
 
 
 

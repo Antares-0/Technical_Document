@@ -12,12 +12,11 @@
       综合来说，针对高吞吐量服务（对应的反义词是低时延服务），并不在乎偶尔的停顿；针对低延迟服务，需要保证每次的垃圾回收都尽可能短来保证低时延。
       因此针对高吞吐量服务，可以设置为一致的-Xms和-Xmx；针对低时延服务，-Xms和-Xmx不建议设置为一样的。
    ```
-   5. 
-2. k
+2. 未完待续
 
 
 
-## 二、一键解决方案
+## 二、参数配置一键解决方案
 1. 支付宝平台提供了页面可供一键生成参数配置，[JVM参数配置](https://render.alipay.com/p/s/jvm-generate/JvmGenerate)。【仅支持到JDK8】
 2. HeapDump平台提供了页面可供一键生成参数配置，[JVM参数配置](https://opts.share.heapdump.cn/result/generate/1zqgg)。【仅支持到JDK8】
 

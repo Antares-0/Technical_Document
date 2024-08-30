@@ -48,6 +48,7 @@
       | 100 | 尝试呼叫（trying） |
       | 180 | 振铃（Ringing） |
       | 181 | 呼叫整子啊前赚（Call is Being Forwarded） |
+      | 183 | 会话处理中（Session Progress） |
       | 200 | 成功响应（OK） |
       | 302 | 临时迁移（Move Temporarily） |
       | 400 | 错误请求（Bad Request） |
@@ -107,8 +108,8 @@
 4. Registration/Location Server，注册和定位服务器，用于登记和定位UA，在线的UA会定时的向注册服务器发送SIP消息来表明UA当前的位置，Registration服务器会将该信息存入数据库中，当其他UA向该UA发送request时就能获得该UA的位置。
 5. Redirect Server，用于重定向，在逻辑上相当于一个特殊的UA。
 6. 架构图
-   ![SIP协议架构1](./fig/SIP.png)
-   ![SIP协议框架2](./fig/SIP2.png)
+   ![SIP协议架构1](./fig/SIP.png)  
+   ![SIP协议框架2](./fig/SIP2.png)  
 
 # 四、SIP协议概念
 1. SIP协议有三个需要重点理解的概念，事务（Transaction），会话（Session），对话（Dialog）。
@@ -124,13 +125,47 @@
 
 # 五、SIP协议交互
 1. 发起通话的交互流程
-   ```text
-   UAC 发送 INVITE 请求给 UAS，包含了自身的 SDP 描述信息，UAS 收到 INVITE 请求后，将返回 100 Trying 响应，表示正在处理请求。
-   UAS 分析 SDP 描述信息，并根据其支持的编解码器和传输协议，选择合适的音频和视频编解码器以及传输协议，并生成自己的 SDP 描述信息，然后将该信息打包成 200 OK 响应发回给 UAC。
-   UAC 收到 200 OK 响应后，分析 SDP 描述信息，并根据其支持的编解码器和传输协议，选择合适的音频和视频编解码器以及传输协议，并将该信息打包成 ACK 请求，发送给 UAS，表示接受了 UAS 提供的媒体协商。
-   UAS 收到 ACK 请求后，开始发送 RTP 数据包（实时传输协议，用于传输音频和视频数据），表示 VoIP 会话已经建立。
-   在会话过程中，UAS 可能会发送一些状态信息给 UAC，例如 180 Ringing 响应，表示正在振铃；或者 183 Session Progress 响应，表示媒体协商已经完成，可以开始传输媒体数据。
-   ```
+   - 基本理论
+      ```text
+      UAC 发送 INVITE 请求给 UAS，包含了自身的 SDP 描述信息，UAS 收到 INVITE 请求后，将返回 100 Trying 响应，表示正在处理请求。
+      UAS 分析 SDP 描述信息，并根据其支持的编解码器和传输协议，选择合适的音频和视频编解码器以及传输协议，并生成自己的 SDP 描述信息，然后将该信息打包成 200 OK 响应发回给 UAC。
+      UAC 收到 200 OK 响应后，分析 SDP 描述信息，并根据其支持的编解码器和传输协议，选择合适的音频和视频编解码器以及传输协议，并将该信息打包成 ACK 请求，发送给 UAS，表示接受了 UAS 提供的媒体协商。
+      UAS 收到 ACK 请求后，开始发送 RTP 数据包（实时传输协议，用于传输音频和视频数据），表示 VoIP 会话已经建立。
+      在会话过程中，UAS 可能会发送一些状态信息给 UAC，例如 180 Ringing 响应，表示正在振铃；或者 183 Session Progress 响应，表示会话处理中，代表处理有关未分类的呼叫处理的信息
+      ```
+      ![SIP建立通话](./fig/createSipConnect.png)
+   - 线上案例
+      | 主叫(UA)活动 | Proxy Server活动 | 被叫(UA)活动 |
+      | ---  | ---  | ---  |
+      | 向Proxy Server发送INVITE请求 | - | - |
+      | | 向主叫发送TRYING信令 | |
+      | | 服务器内部校验请求 | |
+      | | 校验成功，向被叫发送INVITE请求 | |
+      | | | 被叫收到INVITE信令，返回TRYING |
+      | | | 被叫发送Session Progress信令，会话处理中 |
+      | | Proxy Server转发Session Progress信令 | |
+      | 收到Session Progress信令，发送语音包 | | |
+      | | --- | |
+      | | | 发送语音包 |
+      | | | 发送响铃信令RINGING |
+      | | 转发RINGING | |
+      | 收到RINGING | | |
+      | | | 用户接听，发送OK信令 |
+      | | 收到信令，回应ACK | |
+      | | 向主叫发送OK，转发已接听 | |
+      | 收到已接听，返回ACK | | |  
+      | 17:45:57 会话已经建立 | 17:45:57 会话已经建立 | 17:45:57 会话已经建立 |  
+      | 交互语音 | 交互语音 | 交互语音 |  
+      | 发送OPTION保活信令（特殊机制） | | |
+      | | 返回保活信令OK | |
+      | 17:46:07 会话结束 | 17:46:07 会话结束 | 17:46:07 会话结束 |  
+      | 主叫挂断，发送BYE信令 | | |
+      | | 转发BYE信令，并返回OK | |
+      | 收到Proxy Server的BYE信令，返回OK | | |
+      | 主叫已经挂断 |  | |
+      | | | 收到Proxy Server的BYE信令，挂断并返回OK |
+      | | 通话结束 | |
+      ![SIP正常交互实例](./fig/SIPNormal.png)
 2. 结束通话的交互流程
    UAC（User Agent Client）或者 UAS（User Agent Server）决定结束通话。
    ```text

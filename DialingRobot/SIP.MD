@@ -194,7 +194,8 @@
 1. 来自[stackoverflow](https://stackoverflow.com/questions/498043/what-is-the-currently-popular-java-sip-library)
 2. SIP Servlet
 3. peers
-4. jain-sip
+4. [jain-sip](https://zhuanlan.zhihu.com/p/699932572)
+
    
 
 
@@ -206,3 +207,4 @@
 4. https://blog.csdn.net/hao745580264_dawei/article/details/140464697
 5. https://blog.csdn.net/wai_58934/article/details/136315034
 6. https://blog.csdn.net/weixin_45533131/article/details/132385632
+7. jain-SIP的demo：https://blog.csdn.net/FlyLikeButterfly/article/details/85101473

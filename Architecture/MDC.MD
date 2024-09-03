@@ -5,6 +5,7 @@
 
 
 ## 二、MDC怎么用
+1. new MDCRunnable()
 
 
 

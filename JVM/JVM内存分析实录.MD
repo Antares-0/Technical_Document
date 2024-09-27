@@ -70,7 +70,11 @@
        - `-Dcom.sun.management.jmxremote.authenticate=false`: 开启鉴权?
      - 启动一个本地的jConsole程序，将hostname和port配置完整，实现远程链接
    - 实时监控案例 ![jConsole](./fig/jConsole.png)
-4. 
+
+
+
+## 四、内存分析经验
+1. 线上不要在有流量的时候进行dump，dump会导致stw，请求会超时很长时间。
 
 
 参考文档

@@ -23,11 +23,10 @@
 1. 简单易懂的Exception
    1. NoClassDefFoundError，存粹的Jar包冲突问题
    2. ClassNotFoundException，存粹的Jar包冲突问题
-2. 不容易发现的Exception「积累中」
-   1. `TypeNotPresentException or ArrayStoreException`:外表上是java.lang.ArrayStoreException: sun.reflect.annotation.TypeNotPresentExceptionProxy，但是实际上还是Jar包的冲突问题或者是找不到某个需要加载的类的问题
+2. 不容易发现的Exception
+   -  `TypeNotPresentException or ArrayStoreException`:外表上是java.lang.ArrayStoreException: sun.reflect.annotation.TypeNotPresentExceptionProxy，但是实际上还是Jar包的冲突问题或者是找不到某个需要加载的类的问题
       ![代码实例](fig/TypeNotPresentExceptionProxy.png)
       该异常内核为NoClassDefFoundException，被包装成为TypeNotPresentExceptionProxy。
-   2. 
 
 
 ## 三、解决Jar包冲突

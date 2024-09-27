@@ -8,11 +8,21 @@
 
 ## 二、内存分析工具
 
-1. visualVM: JDK14之前自带，在后续版本被取消。
-2. jConsole:
+1. visualVM: JDK14之前自带，在后续版本被取消（本次没有使用）。
+2. jConsole: 是各个版本JDK自带的，可以通过远程方式指定端口号和ip地址，本地监控远程的JVM运行情况。
+   1. 【命令行模式】该工具可以本地执行：
+      ```text
+      jconsole 2956
+      ```
+   2. 【命令行模式】该工具可以远程调试：
+      ```text
+      jconsole hostName:portNum
+      ```
+3. jstat: 
+4. jmap: 
 
-## 三、线上内存分析实例
 
+## 三、线上内存分析案例
 1. `jstat -gc [进程号]` 展示从项目启动到当前时刻GC相关信息
     ```txt
     S0C  S1C  S0U  S1U  EC  EU      OC           OU          MC         MU       CCSC      CCSU     YGC     YGCT   FGC   FGCT   CGC    CGCT     GCT   
@@ -49,9 +59,23 @@
 
    通过线上的情况看，老年代的占用确实占满了，需要进一步排查问题，究竟是那部分代码导致了老年代占用过高。
 
-2. `jmap -histo [pid] >> myTxt.txt` 将
+2. `jmap -histo [pid] >> myTxt.txt` 将内存相关数据，写到文件中，方便查看。
+3. 使用JConsole工具：
+   - 使用方式：
+     - 在部署远程服务器时，在JVM启动参数中，添加下列参数：
+       - `-Dcom.sun.management.jmxremote`: 是否支持JMX远程访问？
+       - `-Djava.rmi.server.hostname=10.192.1.0`: 可以指定ip或者指定ip范围，例如`192.168.1.0/24`(24是子网掩码，前24位是固定的)。注意，这里的ip是服务器的ip，把服务部署在哪里就写哪个。
+       - `-Dcom.sun.management.jmxremote.port=8899`: jmx绑定的端口
+       - `-Dcom.sun.management.jmxremote.ssl=false`: 启用ssl连接？
+       - `-Dcom.sun.management.jmxremote.authenticate=false`: 开启鉴权?
+     - 启动一个本地的jConsole程序，将hostname和port配置完整，实现远程链接
+   - 实时监控案例 ![jConsole](./fig/jConsole.png)
+4. 
 
 
 参考文档
 
 1. https://blog.csdn.net/qq_33204709/article/details/132126351
+2. Oracle的官方文档：https://docs.oracle.com/en/java/javase/17/management/using-jconsole.html#GUID-0FAC766D-A99A-4E98-B6BC-1D5711C71CAE
+3. -Djava.rmi.server.hostname参数配置ip：https://www.5axxw.com/questions/simple/kh4v0f
+4. 

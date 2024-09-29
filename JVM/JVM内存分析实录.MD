@@ -7,7 +7,6 @@
 3. JDK14起，已不再集成visualvm，需要自己去visualvm官网下载；下载地址：https://visualvm.github.io/ 。
 
 ## 二、内存分析工具
-
 1. visualVM: JDK14之前自带，在后续版本被取消（本次没有使用）。
 2. jConsole: 是各个版本JDK自带的，可以通过远程方式指定端口号和ip地址，本地监控远程的JVM运行情况。
    1. 【命令行模式】该工具可以本地执行：
@@ -18,8 +17,10 @@
       ```text
       jconsole hostName:portNum
       ```
-3. jstat: 
-4. jmap: 
+3. jstat: 命令行工具，用于输出线程的调用栈，有助于分析线程死锁问题。
+4. jstack: 命令行工具，用于生成java虚拟机当前时刻的进程快照。
+5. jmap: 用于生成堆转储文件的命令行工具。
+6. MAT（Memory Analyzer）：
 
 
 ## 三、线上内存分析案例
@@ -70,6 +71,7 @@
        - `-Dcom.sun.management.jmxremote.authenticate=false`: 开启鉴权?
      - 启动一个本地的jConsole程序，将hostname和port配置完整，实现远程链接
    - 实时监控案例 ![jConsole](./fig/jConsole.png)
+4. 
 
 
 

@@ -107,7 +107,7 @@
 3. Proxy Server，代理服务器，主要是转发Request和Response给其他的Proxy Server或者UA。Proxy Server分为有状态代理服务器和无状态代理服务器，前者会保留一次通信事务的状态，通过一个有限自动机来控制转发操作，而后者不保存状态，只是实现透明的转发操作。
 4. Registration/Location Server，注册和定位服务器，用于登记和定位UA，在线的UA会定时的向注册服务器发送SIP消息来表明UA当前的位置，Registration服务器会将该信息存入数据库中，当其他UA向该UA发送request时就能获得该UA的位置。
 5. Redirect Server，用于重定向，在逻辑上相当于一个特殊的UA。
-6. 架构图
+6. 架构图  
    ![SIP协议架构1](./fig/SIP.png)  
    ![SIP协议框架2](./fig/SIP2.png)  
 

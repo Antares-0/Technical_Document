@@ -97,7 +97,7 @@
      - 用户、用户组隔离限制
 2. 架构 
 
-![img](https://cdn.nlark.com/yuque/0/2021/svg/1613913/1624937894925-f437bd98-94e2-4334-9657-afa69bb52179.svg)
+![img](fig/k8s6.svg)
 
 - Docker_Host：
   - 安装Docker的主机
@@ -186,7 +186,7 @@
 
 1. 常用命令
 
-   ![image.png](https://cdn.nlark.com/yuque/0/2021/png/1613913/1625373590853-2aaaa76e-d5b5-446b-850a-f6cfa26ac70a.png?x-oss-process=image%2Fwatermark%2Ctype_d3F5LW1pY3JvaGVp%2Csize_85%2Ctext_YXRndWlndS5jb20gIOWwmuehheiwtw%3D%3D%2Ccolor_FFFFFF%2Cshadow_50%2Ct_80%2Cg_se%2Cx_10%2Cy_10%2Fformat%2Cwebp%2Fresize%2Cw_1168%2Climit_0)
+   ![image.png](fig/k8s7.png)
 
 2. 基础实战
 

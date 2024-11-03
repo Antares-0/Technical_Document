@@ -15,10 +15,8 @@
    select * from students where age = cast('123' as int)
    ```
    如果`age`列加了索引，这种情况不会导致索引失效，因为转换没有发生在索引列上。
-3. 
 
 
 
 参考资料
 1. https://zhuanlan.zhihu.com/p/635230263
-2. 

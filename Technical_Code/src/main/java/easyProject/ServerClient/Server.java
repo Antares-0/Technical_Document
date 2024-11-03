@@ -15,6 +15,5 @@ public class Server {
             System.out.println(string);
         }
         System.out.println("over");
-
     }
 }

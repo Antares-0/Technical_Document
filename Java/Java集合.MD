@@ -92,7 +92,7 @@
        - transfer方法会遍历旧的HashMap对应的槽，从cur头部取出一个节点，并将cur修改为对应的next节点
        - 每次从头取一个节点进行reHash
     
-    2. 不正常的HashMap扩容问题（多线程下）
+    2. 不正常的HashMap扩容问题（多线程下，先3后7，7已经被另一个线程指向3了，但是线程一重新进入的时候，又处理了一遍3）
    
        ![正常Hash过程](./fig/HashMap01.jpg)
        ![正常Hash过程](./fig/HashMap02.jpg)
@@ -209,9 +209,9 @@
     2. 锁机制：ConcurrentHashMap内部使用了分段锁的机制，将整个映射分为多个段，每个段都有一个独立的锁
     3. 读性能：有写的情况下读需要阻塞，ConcurrentHashMap分段，可以提高性能
     4. 迭代器：
-       HashMap在迭代器遍历时，如果在迭代过程中有其他线程对集合进行了修改，可能会抛出`ConcurrentModificationException`异常。
+       HashMap在迭代器遍历时，如果在迭代过程中有其他线程对集合进行了修改，可能会抛出`ConcurrentModificationException`异常；HashMap是强一致性迭代器。
        `ConcurrentHashMap`提供了弱一致性的迭代器，允许在迭代过程中对集合进行修改。
-       > 结构性变化下，也不会影响Map中正在遍历的链表，因此不会受到影响
+       > 结构性变化下，也不会影响Map中正在遍历的链表，因此不会受到影响；更准确地说，ConcurrentHashMap为了保证一定程度的并发性，实际上读取的是某一时刻的快照，甚至可能会返回某些另一个线程已经删除过的节点
     5. null问题：`ConcurrentHashMap`不允许key或者value是null；HashMap可以。
 6. ConcurrentHashMap读操作为什么不需要加锁？
     1. 用HashEntry对象的不变性来降低读操作对加锁的需求；

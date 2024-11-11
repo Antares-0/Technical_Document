@@ -1,9 +1,7 @@
 package easyProject.SerializableTest;
 
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 
 public class MyTest {
     public static void main(String[] args) throws Exception {

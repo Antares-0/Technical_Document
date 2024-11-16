@@ -12,3 +12,11 @@
 
 
 ## 三、三级缓存循环依赖
+
+
+
+
+
+参考资料
+1. Spring事务：https://blog.csdn.net/qq_57581439/article/details/132086303
+2. Spring事务：https://blog.csdn.net/minghao0508/article/details/124374637

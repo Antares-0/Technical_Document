@@ -187,10 +187,10 @@
                         // 正常创建对象分配空间的流程是：
                         // memory = allocate();  // 1.分配对象内存空间
                         // instance(memory);     // 2.初始化对象
-                        // instance = memory;    // 3.设置instance指向刚分配的内存地址，此时instance！=null
+                        // instance = memory;    // 3.设置instance指向刚分配的内存地址，此时instance != null
                         // 出现重排：
                         // memory = allocate();  // 1.分配对象内存空间
-                        // instance = memory;    // 3.设置instance指向刚分配的内存地址，此时instance！=null，但是对象还没有初始化完成！
+                        // instance = memory;    // 3.设置instance指向刚分配的内存地址，此时instance != null，但是对象还没有初始化完成！
                         // instance(memory);     // 2.初始化对象
                         // 重排的情况下，对象还没有被初始化就已经返回了
                         instance = new DoubleCheckLock();

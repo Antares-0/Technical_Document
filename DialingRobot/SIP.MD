@@ -22,6 +22,7 @@
    1. 请求行格式：[Method]-[Request-URI]-[SIP-Version]-[CRLF]  
       例：INVITE sip:bob@zju.com SIP/2.0 /r/n
    2. 请求行的`[Method]`字段
+   
       | Method | 方法说明 |
       | - | - |
       | REGISTER | 注册联系信息 |
@@ -42,7 +43,8 @@
    1. 状态行格式：[SIP-Version]-[Status-Code]-[Reason-Phrase]-[CRLF]
    2. 状态行举例：SIP/2.0 200 OK /r/n
    3. 状态行的`[Status-Code]`字段：
-      状态码由3位数字组成，表示请求是否被理解或被满足；其第一个数字定义了响应的类别，后面两位没有具体的分类。
+      状态码由3位数字组成，表示请求是否被理解或被满足；其第一个数字定义了响应的类别，后面两位没有具体的分类。  
+
       | 状态码 | 说明 |
       | - | - |
       | 100 | 尝试呼叫（trying） |

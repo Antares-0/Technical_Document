@@ -31,6 +31,13 @@
             <version>2.1.8.RELEASE</version>
         </dependency>
 
+        <!--SpringBoot开启事务组件-->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>5.1.9.RELEASE</version>
+        </dependency>
+
         <!--SIP开发引入-->
         <dependency>
             <groupId>javax.sip</groupId>

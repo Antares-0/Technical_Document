@@ -156,7 +156,10 @@
 1. ReentrantLock的使用是显式的，因此照比synchronized的使用更加灵活。
    1. 
 2. AQS抽象式队列同步器
-   
+   抽象式队列同步器（AbstractQueuedSynchronizer，简称AQS）是一个用来构建锁或者其他同步组件的基础框架，它使用了一个int成员变量`state`来表示同步状态，通过内置的FIFO队列来完成资源获取线程的排队工作，当状态为0时表示没有加锁，当状态大于0时表示有线程加锁。  
+   AQS定义了一套多线程访问共享资源的同步器框架，许多同步类实现都依赖于它，如ReentrantLock、Semaphore、CountDownLatch等。  
+   - AQS的变量一：`state`，用来保证
+   - AQS的变量二：`head`和`tail`，表示
 3. 
 
 

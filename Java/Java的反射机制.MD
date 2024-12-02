@@ -2,7 +2,7 @@
 
 ## 一、反射是什么（.java --> .class）
 
-1. 反射是指java在程序运行时动态加载并获取类的详细信息，从而操作类或者对象的属性和方法。本质是JVM得到class对之后，再通过class对象进行反编译，从而得到对象的各种信息。
+1. 反射是指java在程序运行时动态加载并获取类的详细信息，从而操作类或者对象的属性和方法。本质是JVM得到class对象之后，再通过class对象进行反编译，从而得到对象的各种信息。
 2. Java属于先编译再运行的语言，程序中对象的类型在编译期间就定下来了，但程序再运行时可能需要动态加载某些类，于是相当于JVM留下了一个后门。
 
 ## 二、反射的优点和缺点
@@ -28,8 +28,7 @@
 1. 反编译：.class-->.java
 2. 通过反射机制访问java对象的属性，方法，构造方法等
 3. 当我们在使用IDE,比如IDEA时，当我们输入一个对象或者类，并想调用他的属性和方法时，一按点号，编译器就会自动列出他的属性或者方法，这里就是用到反射。
-4.
-反射最重要的用途就是开发各种通用框架。比如很多框架（Spring）都是配置化的（比如通过XML文件配置Bean），为了保证框架的通用性，他们可能需要根据配置文件加载不同的类或者对象，调用不同的方法，这个时候就必须使用到反射了，运行时动态加载需要的加载的对象。
+4. 反射最重要的用途就是开发各种通用框架。比如很多框架（Spring）都是配置化的（比如通过XML文件配置Bean），为了保证框架的通用性，他们可能需要根据配置文件加载不同的类或者对象，调用不同的方法，这个时候就必须使用到反射了，运行时动态加载需要的加载的对象。
 
 ## 五、反射的使用
 
@@ -51,12 +50,12 @@
    Class stuClass = Class.forName("com.lxm.Student");
    // 加载反射对象的相关字段，getFields只能获取公用的字段
    Field[] fieldArray = stuClass.getFields();
-   for(Field f : fieldArray){
-   System.out.println(f);
+   for (Field f : fieldArray) {
+       System.out.println(f);
    }
    fieldArray = stuClass.getDeclaredFields();
-   for(Field f : fieldArray){
-   System.out.println(f);
+   for (Field f : fieldArray) {
+       System.out.println(f);
    }
    // 获取name这个字段
    Field field = stuClass.getField("name");

@@ -15,7 +15,18 @@
 2. 
 
 
-## 
+## 二、git配置提交角色信息
+1. 全局配置 - 基本流程
+   ```bash
+    git config --global user.name 'liuxianming' # 修改提交人name
+    git config --global user.email 'liuxianming@example.com' # 修改提交人的email，在公司中通常根据email来确定是不是内部人员
+   ```
+2. 项目配置 - 基本流程
+   ```bash
+    
+   ```
+3. 项目配置与全局配置的基本关系
+   
 
 
 参考文档

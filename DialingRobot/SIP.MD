@@ -45,23 +45,23 @@
    3. 状态行的`[Status-Code]`字段：
       状态码由3位数字组成，表示请求是否被理解或被满足；其第一个数字定义了响应的类别，后面两位没有具体的分类。  
 
-      | 状态码 | 说明 |
-      | - | - |
-      | 100 | 尝试呼叫（trying） |
-      | 180 | 振铃（Ringing） |
-      | 181 | 呼叫整子啊前赚（Call is Being Forwarded） |
-      | 183 | 会话处理中（Session Progress） |
-      | 200 | 成功响应（OK） |
-      | 302 | 临时迁移（Move Temporarily） |
-      | 400 | 错误请求（Bad Request） |
-      | 401 | 未授权（Unauthorized） |
-      | 403 | 禁止（Forbidden） |
-      | 404 | 用户不存在（Not Found） |
-      | 408 | 请求超时（Request Timeout） |
-      | 480 | 暂时无人接听（Temporarily Unavailable） |
-      | 486 | 线路忙（Busy Here） |
-      | 504 | 服务器超时（Server Time-out） |
-      | 600 | 全忙（Busy Everywhere） |
+      |  状态码  |                说明                |
+      |:-----:|:--------------------------------:|
+      |  100  |           尝试呼叫（trying）           |
+      |  180  |           振铃（Ringing）            |
+      |  181  | 呼叫整子啊前赚（Call is Being Forwarded） |
+      |  183  |     会话处理中（Session Progress）      |
+      |  200  |             成功响应（OK）             |
+      |  302  |      临时迁移（Move Temporarily）      |
+      |  400  |        错误请求（Bad Request）         |
+      |  401  |        未授权（Unauthorized）         |
+      |  403  |          禁止（Forbidden）           |
+      |  404  |         用户不存在（Not Found）         |
+      |  408  |      请求超时（Request Timeout）       |
+      |  480  | 暂时无人接听（Temporarily Unavailable）  |
+      |  486  |          线路忙（Busy Here）          |
+      |  504  |      服务器超时（Server Time-out）      |
+      |  600  |       全忙（Busy Everywhere）        |
    4. 状态行的`[Reason-Phrase]`字段：
       原因码，描述状态码，增强可读性，对状态码的简短文本描述，用于提供关于响应的额外信息
 4. 消息头

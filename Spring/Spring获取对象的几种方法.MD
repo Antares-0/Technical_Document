@@ -1,0 +1,4 @@
+
+@SpringApplicationContex.getBean等方法可以在任何地方获取bean对象，包括非Spring管理的类中
+
+

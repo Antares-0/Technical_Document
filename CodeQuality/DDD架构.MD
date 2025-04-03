@@ -40,6 +40,7 @@
    - Domain层：主要是封装了核心业务逻辑，并通过领域服务（Domain Service）和领域对象（Domain Entity）的方法对App层提供业务实体和业务逻辑计算。领域是应用的核心，不依赖任何其他层次；
    - Infrastructure层：主要负责技术细节问题的处理，比如数据库的CRUD、搜索引擎、文件系统、分布式服务的RPC等。此外，领域防腐的重任也落在这里，外部依赖需要通过gateway的转义处理，才能被上面的Application层和Domain层使用。
 3. COLA项目架构的基本样式
+   
    ![COLA](./fig/COLA.png)
 
    |       层次       |     包名      |            功能             | 是否必须 |

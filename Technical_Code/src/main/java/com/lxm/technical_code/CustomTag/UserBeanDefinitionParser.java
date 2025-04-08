@@ -1,6 +1,5 @@
 package com.lxm.technical_code.CustomTag;
 
-import org.mockito.internal.util.StringUtil;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractSingleBeanDefinitionParser;
 import org.springframework.util.StringUtils;

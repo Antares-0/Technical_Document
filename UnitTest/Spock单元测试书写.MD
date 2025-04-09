@@ -76,7 +76,7 @@
         }
     }
    ```
-2. 单元测试
+2. 单元测试【参考com.lxm.technical_code.UT.RoomNumberUtilTest】
    ```java 
     def roomNumberUtil = new RoomNumberUtil()
     def spy = Spy(roomNumberUtil)

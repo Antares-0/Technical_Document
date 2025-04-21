@@ -12,26 +12,66 @@ public class SuDuProcessor {
     public static void main(String[] args) {
         // 输入
         int[][] grid = {
-                {1,2,3,3,5,6,7,8,9},
-                {1,2,3,4,5,6,7,8,9},
-                {1,2,3,4,5,6,7,8,9},
-                {1,2,3,4,5,6,7,8,9},
-                {1,2,3,4,5,6,7,8,9},
-                {1,2,3,4,5,6,7,8,9},
-                {1,2,3,4,5,6,7,8,9},
-                {1,2,3,4,5,6,7,8,9},
-                {1,2,3,4,5,6,7,8,9},
+                {1, 2, 3, 4, 5, 6, 7, 8, 9},
+                {4, 5, 6, 7, 8, 9, 1, 2, 3},
+                {7, 8, 9, 1, 2, 0, 4, 5, 6},
+                {2, 3, 4, 5, 6, 7, 8, 9, 1},
+                {5, 6, 7, 0, 9, 1, 2, 3, 4},
+                {8, 9, 1, 2, 3, 4, 5, 6, 7},
+                {3, 4, 5, 6, 7, 8, 9, 1, 2},
+                {6, 7, 8, 9, 1, 2, 3, 4, 5},
+                {9, 1, 2, 3, 4, 5, 6, 7, 8},
         };
+
+        int filledNum = 0;
+
+        for (int i = 0; i < grid.length; i++) {
+            for (int j = 0; j < grid[0].length; j++) {
+                if (grid[i][j] != 0) {
+                    filledNum++;
+                }
+            }
+        }
         // 解决方案
-        Set<Integer> availableNums = getAvailableNums(0, 0, grid);
-        availableNums.forEach(System.out::println);
+        dfs(grid, filledNum);
+        // 打印二维数组
+        System.out.println(filledNum);
+    }
+
+    private static void dfs(int[][] grid, int filledNum) {
+        if (filledNum == 81) {
+            return;
+        }
+        // 本轮迭代是否有更改
+        int changedNumCount = 0;
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                Set<Integer> availableNums = getAvailableNums(i, j, grid);
+                if (availableNums.size() == 1) {
+                    changedNumCount++;
+                    grid[i][j] = getNum(availableNums);
+                }
+            }
+        }
+        if (changedNumCount > 0) {
+            dfs(grid, filledNum + changedNumCount);
+        }
+    }
+
+    private static int getNum(Set<Integer> availableNums) {
+        for (int i = 1; i <= 9; i++) {
+            if (availableNums.contains(i)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     // x = 行号
     // y = 列号
     public static Set<Integer> getAvailableNums(int x, int y, int[][] grid) {
         // 初始化
-        Set<Integer> set = new HashSet<Integer>(){
+        Set<Integer> set = new HashSet<Integer>() {
             {
                 add(1);
                 add(2);
@@ -57,8 +97,8 @@ public class SuDuProcessor {
         int x_range_base = x_range * 3;
         int y_range = y / 3;
         int y_range_base = y_range * 3;
-        for (int i = 0; i < 3; i ++) {
-            for (int j = 0; j < 3; j ++) {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
                 set.remove(grid[x_range_base + i][y_range_base + j]);
             }
         }

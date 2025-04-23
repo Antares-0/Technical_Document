@@ -53,10 +53,12 @@
         </dependency>
 
         <!--lombok组件-->
+        <!--jdk升级至21后需要更新版本至30以上-->
+        <!--https://blog.csdn.net/ImNotNpe/article/details/146499252-->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.8</version>
+            <version>1.18.32</version>
         </dependency>
 
         <!--开发工具-->
@@ -99,5 +101,17 @@
 
 
     </dependencies>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>21</source>
+                    <target>21</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

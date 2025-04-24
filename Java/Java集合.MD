@@ -9,11 +9,12 @@
        ```java
         // 基础的put方法
         public V put(K key, V value) {
-             return putVal(hash(key), key, value, false, true);
+            return putVal(hash(key), key, value, false, true);
         }
         // resize，超过阈值了
         final V putVal(int hash, K key, V value, boolean onlyIfAbsent, boolean evict) {
             Node<K,V>[] tab; Node<K,V> p; int n, i;
+            // 如果
             if ((tab = table) == null || (n = tab.length) == 0)
                 n = (tab = resize()).length;
             if ((p = tab[i = (n - 1) & hash]) == null)
@@ -47,6 +48,7 @@
                 }
             }
             ++modCount;
+            // 先添加元素，再resize
             if (++size > threshold)
                 // resize方法
                 resize();
@@ -54,7 +56,7 @@
             return null;
         }
         // resize()
-        void resize(int newCapacity){
+        void resize(int newCapacity) {
             Entry[] oldTable = table;
             int oldCapacity = oldTable.length;
             ......
@@ -114,6 +116,42 @@
         - 由于7的next已经在线程二中被设置为3了，因此线程一`Entry<K,V> next = e.next;`这步骤的时候，next就是3，相当于做了两次7的next变为3
         - 第二次的next如果是正常情况下应该是null，但是7的next被第二个线程设置成了3
         - 本轮针对已经reHash过的3进行了重新Hash，当`e.next = newTable[i];`这句话执行的时候，3的next设置为7了，出现了循环
+3. HashMap的扩容过程
+   - HashMap中，正常是先插入元素再扩容；当HashMap是通过new HashMap()创建（实际上初始化的只有最大容量和负载因子）且第一次添加元素的时候，插入数据是先扩容再插入数据。
+   - HashMap如果在创建时指定了容量大小，会使用`HashMap(int initialCapacity, float loadFactor)`这个方法创建HashMap
+     - 使用`HashMap(int initialCapacity, float loadFactor)`这个方法创建HashMap会调用tableSizeFor方法设置HashMap的阈值（`this.threshold = tableSizeFor(initialCapacity);`）
+     - tableSizeFor方法的含义就是找到大于等于cap的最小2的整数次方,，并设置大小
+     ```java
+     static final int tableSizeFor(int cap) {
+         // 0010 0000 0000 0000 0000 0000 0000 0001      
+         int n = cap - 1;
+         // 0010 0000 0000 0000 0000 0000 0000 0000
+         n |= n >>> 1;
+         // 0011 0000 0000 0000 0000 0000 0000 0000
+         n |= n >>> 2;
+         // 0011 1100 0000 0000 0000 0000 0000 0000
+         n |= n >>> 4;
+         // 0011 1111 1100 0000 0000 0000 0000 0000
+         n |= n >>> 8;
+         // 0011 1111 1111 1111 1100 0000 0000 0000
+         n |= n >>> 16;
+         // 0011 1111 1111 1111 1111 1111 1111 1111
+         return (n < 0) ? 1 : (n >= MAXIMUM_CAPACITY) ? MAXIMUM_CAPACITY : n + 1;
+         // n + 1 = 0100 0000 0000 0000 0000 0000 0000 0000
+         // 直接通过位移运算找到了大于等于cap的最小的2的次方 5 --> 8, 17 --> 32
+     }
+     ```
+   - HashMap实行了懒加载，新建HashMap时不会对table进行赋值，第一次插入的时候会resize并插入元素，之后会先插入元素再判断要不要resize
+   - resize过程中将元素重新定位的过程：
+     ```txt
+     A对象的原hash值，31  --- 如果当前16个槽位 --- A对象会被hash到最后一个[15]号槽位
+     B对象的原hash值，15  --- 如果当前16个槽位 --- B对象会被hash到最后一个[15]号槽位
+     
+     A对象的原hash值，31  --- 如果当前32个槽位 --- A对象会被hash到最后一个[31]号槽位
+     B对象的原hash值，15  --- 如果当前32个槽位 --- B对象会被hash到中间某个[15]号槽位
+     
+     槽位的限制导致了hash值的高位不会被采纳，因此当扩容一次的时候，也就是探究高一位的hash值是不是1
+     ```
 
 
 
@@ -221,7 +259,7 @@
          - clear操作：clear操作仅仅将 ConcurrentHashMap 中的所有桶变成空，但是之前的链表还在，只是桶不再引用这些链表而已，链表本身的结构没有被改变。
          - remove操作：remove复制了删除节点前面的，删除节点后面的没有变化（看图）
          
-            ![](./fig/conHashMap.png)
+            ![ConcurrentHashMap的remove操作](./fig/conHashMap.png)
        - 综上所述，另一个线程在干什么，不影响我这个线程在读
     2. 用Volatile变量协调读写线程间的内存可见性；
     3. 若读时发生指令重排序现象，则加锁重读；

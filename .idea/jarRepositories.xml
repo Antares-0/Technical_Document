@@ -34,12 +34,12 @@
     <remote-repository>
       <option name="id" value="central" />
       <option name="name" value="Central Repository" />
-      <option name="url" value="http://artifactory.release.ctripcorp.com/artifactory/trip-maven-prod" />
+      <option name="url" value="http://maven.aliyun.com/nexus/content/repositories/public" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="central" />
       <option name="name" value="Central Repository" />
-      <option name="url" value="http://maven.aliyun.com/nexus/content/repositories/public" />
+      <option name="url" value="http://artifactory.release.ctripcorp.com/artifactory/trip-maven-prod" />
     </remote-repository>
     <remote-repository>
       <option name="id" value="trip-maven-prod" />

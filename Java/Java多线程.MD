@@ -28,6 +28,7 @@
      - 通过monitorEnter和monitorExit指令实现对监视器的访问
    - synchronized同步到方法上的底层原理
      - 通过标识该方法是同步方法（ACC_SYNCHRONIZED）来实现每次调用时先访问监视器monitor
+   - synchronized的可重入性：当一个线程通过synchronized获取到当前的锁之后，可以继续请求该锁。
    - synchronized的可重入性：synchronized是可重入的
 3. JVM对synchronized的优化
    - synchronized的锁优化主要基于统计学原理，在大部分情况下锁的对象往往只被一个线程享有，根本不存在并发问题，基于统计学数据为了提高效率，有了如下的优化方案
@@ -56,7 +57,50 @@
 
 
 ## 二、线程回收的流程
-
+1. 线程池中非核心线程的回收  
+   非核心线程的中会存在一个while循环，不断从阻塞队列中获取任务，当获取不到任务的时候，就会跳出循环释放线程资源。
+   ```java
+   // getTask方法。在获取task中
+   private Runnable getTask() {
+       // 超时标志
+       boolean timedOut = false;
+       // 循环
+       for (;;) {
+           int c = ctl.get();
+           // 1. 线程池状态为 SHUTDOWN 并且队列为空或者STOP的时候会返回 null, 释放当前线程
+           if (runStateAtLeast(c, SHUTDOWN) && (runStateAtLeast(c, STOP) || workQueue.isEmpty())) {
+               ...
+               return null;
+           }
+           // 2. 获取当前线程池中线程的数量
+           int wc = workerCountOf(c);
+           // 3. 当允许核心线程超时 或者 当前线程数量大于核心线程数时 timed = true
+           boolean timed = allowCoreThreadTimeOut || wc > corePoolSize;
+           // 4. timed == true 并且 timeOut == true 并且 队列任务为空且线程池线程存在的情况下，返回null, 释放当前线程
+           if ((wc > maximumPoolSize || (timed && timedOut))
+                   && (wc > 1 || workQueue.isEmpty())) {
+               // Worker 线程数减一操作
+               if (compareAndDecrementWorkerCount(c))
+                   return null;
+               continue;
+           }
+           try {
+               // 5. 这里是关键：timed==true 意思是线程数大于核心线程数的时候，从队列里面取值并加了个 keepAliveTime 超时时间，如果超过这个时间还没取到任务，就timedOut=true, 然后再次循环的时候，上面第4步的if 条件就满足了，就会return null, 然后就会释放线程了。
+               Runnable r = timed ?
+                       workQueue.poll(keepAliveTime, TimeUnit.NANOSECONDS) :
+                       workQueue.take();
+               if (r != null)
+                   return r;
+               timedOut = true;
+           } catch (InterruptedException retry) {
+               timedOut = false;
+           }
+       }
+   }
+   ```
+2. 具体的释放逻辑是`processWorkerExit(w, completedAbruptly)`实现的。
+   
+3. 
 
 
 
@@ -71,7 +115,7 @@
    1. 提交一个新的任务到线程池，线程池会检查正在运行的线程数是否少于 corePoolSize（核心线程数），如果不足，则创建一个新线程来执行任务。  
       <font color='yellow'>当线程数小于核心线程数时，即使现有的线程空闲，线程池也会优先创建新线程来处理任务，而不是直接交给现有的线程处理。</font>
    2. 如果正在运行的线程数大于或等于 corePoolSize，则将任务加入到队列中。
-   3. 如果无法将任务加入到队列（队列已满），则在满足条件的情况下创建 maximumPoolSize（最大线程数）大小的额外线程来处理任务。
+   3. 如果无法将任务加入到队列（队列已满），则在满足条件的情况下创建 maximumPoolSize（最大线程数）大小的额外线程来处理任务，新来的任务和队列中已经有的任务，先执行后来的任务。
    4. 如果创建了最大数量的线程且队列已满，则执行拒绝策略（RejectedExecutionHandler），如默认的策略是抛出 RejectedExecutionException 异常。
    5. 举例：核心线程数2 最大线程数4 瞬间来了6个线程请求
       1. 核心线程（2个）优先处理任务1、2
@@ -163,13 +207,97 @@
 
 ## 五、ReentrantLock可重入锁
 1. ReentrantLock的使用是显式的，因此照比synchronized的使用更加灵活。
-   1. 
 2. AQS抽象式队列同步器
    抽象式队列同步器（AbstractQueuedSynchronizer，简称AQS）是一个用来构建锁或者其他同步组件的基础框架，它使用了一个int成员变量`state`来表示同步状态，通过内置的FIFO队列来完成资源获取线程的排队工作，当状态为0时表示没有加锁，当状态大于0时表示有线程加锁。  
-   AQS定义了一套多线程访问共享资源的同步器框架，许多同步类实现都依赖于它，如ReentrantLock、Semaphore、CountDownLatch等。  
-   - AQS的变量一：`state`，用来保证
-   - AQS的变量二：`head`和`tail`，表示
-3. 
+   AQS定义了一套多线程访问共享资源的同步器框架，许多同步类实现都依赖于它，如ReentrantLock、Semaphore、CountDownLatch等。   
+   ![AQS基本结构](./fig/AQS1.png)  
+   ```java
+   public abstract class AbstractQueuedSynchronizer extends AbstractOwnableSynchronizer {
+       // 指向同步队列队头
+       private transient volatile Node head;
+       // 指向同步的队尾
+       private transient volatile Node tail;
+       // 同步状态，0代表锁未被占用，1代表锁已被占用
+       private volatile int state;
+       // 省略其他代码......
+   }
+   // 静态内部类Node
+   static final class Node {
+       // 共享模式
+       static final Node SHARED = new Node();
+       // 独占模式
+       static final Node EXCLUSIVE = null;
+       // 标识线程已处于结束状态
+       static final int CANCELLED =  1;
+       // 等待被唤醒状态
+       static final int SIGNAL    = -1;
+       // 条件状态
+       static final int CONDITION = -2;
+       // 在共享模式中使用表示获得的同步状态会被传播
+       static final int PROPAGATE = -3;
+   
+       // 等待状态，存在CANCELLED、SIGNAL、CONDITION、PROPAGATE 4种
+       volatile int waitStatus;
+   
+       // 同步队列中前驱结点
+       volatile Node prev;
+   
+       // 同步队列中后继结点
+       volatile Node next;
+   
+       // 请求锁的线程
+       volatile Thread thread;
+   
+       // 等待队列中的后继结点，这个与Condition有关
+       Node nextWaiter;
+   
+       // 判断是否为共享模式
+       final boolean isShared() {
+           return nextWaiter == SHARED;
+       }
+   
+       // 获取前驱结点
+       final Node predecessor() throws NullPointerException {
+           Node p = prev;
+           if (p == null)
+               throw new NullPointerException();
+           else
+               return p;
+       }
+       // .....
+   }
+   ```
+   - AQS的变量一：`state`，表示同步状态；`state > 0`代表资源有线程在占用，其他访问的线程必须进入，`state = 0`代表该资源没有上锁可以抢占
+   - AQS的变量二：`head`，指向同步队列队头，head指向的Node节点是空节点不存储信息。
+   - AQS的变量三：`tail`，指向同步队列队尾
+   - AQS的内部类`Node<pre, waitStatus, thread, next>`：封装想要访问资源的线程对象，构建<font color='yellow'>同步队列</font>
+     - SHARED和EXCLUSIVE常量代表共享模式（如信号量，一个锁允许多条线程同时操作）和独占模式（如可重入锁，同一个时间段内只能有一个线程对共享资源进行操作）
+     - waitStatus则表示当前被封装成Node结点的等待状态
+       - CANCELLED：值为1，在同步队列中等待的线程等待超时或被中断，需要从同步队列中取消该Node的结点，其结点的waitStatus为CANCELLED，即结束状态，进入该状态后的结点将不会再变化。 
+       - SIGNAL：值为-1，被标识为该等待唤醒状态的后继结点，当其前继结点的线程释放了同步锁或被取消，将会通知该后继结点的线程执行。说白了，就是处于唤醒状态，只要前继结点释放锁，就会通知标识为SIGNAL状态的后继结点的线程执行。 
+       - CONDITION：值为-2，与Condition相关，该标识的结点处于等待队列中，结点的线程等待在Condition上，当其他线程调用了Condition的signal()方法后，CONDITION状态的结点将从等待队列转移到同步队列中，等待获取同步锁。 
+       - PROPAGATE：值为-3，与共享模式相关，在共享模式中，该状态标识结点的线程处于可运行状态。 
+       - 0状态：值为0，代表初始化状态。
+   - AQS的内部类`ConditionObject`：构建<font color='yellow'>等待队列</font>
+3. ReentrantLock与AQS之间的关系  
+   ![AQS与ReentrantLock](./fig/AQS2.png)
+   - ReentrantLock的内部类Sync是抽象类，继承AQS，实现了tryRelease方法。
+   - NonfairSync(非公平锁)、 FairSync(公平锁)则继承自Sync，实现了获取锁的tryAcquire()方法，ReentrantLock的所有方法调用都通过间接调用AQS和Sync类及其子类来完成的。
+   - Node：AbstractQueuedSynchronizer 的内部类，用于构建虚拟队列(链表双向链表)，管理需要获取锁的线程。
+   - ReentrantLock：实现了Lock接口的，其内部类有Sync、NonfairSync、FairSync，在创建时可以根据fair参数决定创建NonfairSync(默认非公平锁)还是FairSync。
+4. ReentrantLock的非公平锁的具体实现  
+   ![非公平锁流程图](./fig/AQS3.png)  
+   - 获取同步状态：成功——获取并退出
+   - 获取同步状态：失败
+     - 构建Node节点，将当前Thread封装成一个Node节点，添加到AQS的同步队列中
+     - 队列是不是空：是空，创建并设置head节点；不是空，添加到队列的尾部。节点开始自旋
+     - 前驱节点是head，直接获取同步状态；前驱节点不是head，线程挂起等待，被唤醒后检查前驱节点是不是head；
+     - 获取成功：设置为head
+5. ReentrantLock的公平锁的具体实现
+   - 公平锁与非公平锁的最大差异在于：在使用CAS设置尝试设置state值前，调用了`hasQueuedPredecessors()`判断同步队列是否存在结点，如果存在必须先执行完同步队列中结点的线程，当前线程进入等待状态。
+   - 这就是非公平锁与公平锁最大的区别，即公平锁在线程请求到来时先会判断同步队列是否存在结点，如果存在先执行同步队列中的结点线程，当前线程将封装成node加入同步队列等待。
+   - 而非公平锁呢，当线程请求到来时，不管同步队列是否存在线程结点，直接尝试获取同步状态，获取成功直接访问共享资源，但请注意在绝大多数情况下，非公平锁才是我们理想的选择，毕竟从效率上来说非公平锁总是胜于公平锁。
+
 
 
 
@@ -191,7 +319,7 @@
     
         public static DoubleCheckLock getInstance() {
             // 第一次检测
-            if (instance == null){
+            if (instance == null) {
                 // 同步
                 synchronized (DoubleCheckLock.class) {
                     if (instance == null) {
@@ -220,6 +348,18 @@
 
 
 ## 七、CAS操作
+1. 【注意】CAS操作是原子的，因为在CPU层面提供了操作原语，保证对数据Compare and Swap是原子性操作。
+2. CAS基本思想：CAS(V, E, N)，如果V == E，就把V的值设置为N；如果发现V != E，那就抛出异常。
+3. Java的Unsafe类：这个类中的方法都直接调用操作系统底层资源执行相应任务，可以理解为Java对底层操作系统最近的一层封装
+   - 内存管理：
+   - 提供实例对象的一种新方法
+   - 类和实例对象以及变量的操作
+   - 数组操作
+   - CAS操作的支持
+4. 
+
+
+## 八、Atomic系列
 1. 【注意】CAS操作是原子的，因为在CPU层面提供了操作原语`CMPXCHG`，保证对数据Compare and Swap是原子性操作。
 2. 【注意】CAS操作通常隐含内存屏障（Memory Barrier），保证操作前后的内存可见性和顺序一致性。
 3. 因此CAS可能存在的问题只包括ABA问题，而不存在原子性问题
@@ -253,6 +393,7 @@
 参考资料：
 1. volatile关键字的内存屏障类型：https://blog.csdn.net/q1372302825/article/details/139282172
 2. synchronized关键字：https://blog.csdn.net/javazejian/article/details/72828483
-3. 机器CPU核心数与线程数量的关系：https://www.zhihu.com/question/429883009/answer/2814637253
-4. JVM线程池与OS线程的关系：https://blog.csdn.net/qq_51234063/article/details/124920208
-5. synchronized关键字：https://blog.csdn.net/m0_61814277/article/details/143648433
+3. ReentrantLock：https://blog.csdn.net/javazejian/article/details/75043422
+4. 机器CPU核心数与线程数量的关系：https://www.zhihu.com/question/429883009/answer/2814637253
+5. JVM线程池与OS线程的关系：https://blog.csdn.net/qq_51234063/article/details/124920208
+6. synchronized关键字：https://blog.csdn.net/m0_61814277/article/details/143648433

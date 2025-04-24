@@ -34,6 +34,10 @@
 ## 六、跨页问题
 
 
+## 七、电商平台主键生成
+1. redis的incs命令动态生成
+2. 
+
 
 参考资料
 1. https://cloud.tencent.com/developer/article/1683394

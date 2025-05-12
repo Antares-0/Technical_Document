@@ -65,7 +65,7 @@
             //将Old Hash Table上的数据迁移到New Hash Table上
             transfer(newTable);
             table = newTable;
-            threshold = (int)(newCapacity * loadFactor);
+            threshold = (int) (newCapacity * loadFactor);
         }
         // transfer()
         void transfer(Entry[] newTable) {
@@ -231,12 +231,9 @@
 4. ConcurrentHashMap的高效并发机制是通过以下三个方面保证的：
     1. 锁分段
        ConcurrentHashMap 内部维护了一个 Segment 数组，每个 Segment 对应一个段，这些段之间相互独立，各自管理自己的哈希桶。
-       Segment 类继承了 ReentrantLock，表示一个可重入锁，每个 Segment 对应一个哈希桶。在对某个段进行操作时，通过
-       ReentrantLock 来进行加锁，实现对该段的互斥访问。
-       每个 Segment 中有一个 HashEntry 数组，用于存储键值对。HashEntry 是键值对的节点，采用链表法处理哈希冲突。
-       put 方法是 ConcurrentHashMap 中进行 put 操作的关键方法。在进行 put
-       操作时，先通过哈希值找到对应的段，然后在该段的哈希桶中查找键值对。如果找到了相同的键，则更新值；如果没有找到相同的键，则将新的键值对插入到链表的头部。
-    2. HashEntry的不变性、volatile的内存可见性、加锁重读机制
+       Segment 类继承了 ReentrantLock，表示一个可重入锁，每个 Segment 对应一个哈希桶。在对某个段进行操作时，通过 ReentrantLock 来进行加锁，实现对该段的互斥访问。 
+       每个 Segment 中有一个 HashEntry 数组，用于存储键值对。HashEntry 是键值对的节点，采用链表法处理哈希冲突。在进行 put 操作时，先通过哈希值找到对应的段，然后在该段的哈希桶中查找键值对。如果找到了相同的键，则更新值；如果没有找到相同的键，则将新的键值对插入到链表的头部。
+    2. 该map的存储对象是HashEntry，它包含四个元素key、next、hash、value，HashEntry的不变性、volatile的内存可见性、加锁重读机制
        - 每个段`Segment`内维护了一个volatile修饰的count字段，统计键值对数目的时候，会保证对所有线程可见
        - volatile的内存可见性：value是内存可见的
        - HashEntry的不变性：`HashEntry`的四元组中，key、next、hash都是final的

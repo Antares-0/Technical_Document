@@ -49,7 +49,7 @@
       |:-----:|:--------------------------------:|
       |  100  |           尝试呼叫（trying）           |
       |  180  |           振铃（Ringing）            |
-      |  181  | 呼叫整子啊前赚（Call is Being Forwarded） |
+      |  181  | 电话正在被转接（Call is Being Forwarded） |
       |  183  |     会话处理中（Session Progress）      |
       |  200  |             成功响应（OK）             |
       |  302  |      临时迁移（Move Temporarily）      |

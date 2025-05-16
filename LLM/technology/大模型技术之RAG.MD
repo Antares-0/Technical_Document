@@ -110,4 +110,3 @@
 
 参考文档
 1. 快速入门RAG整体流程：https://blog.csdn.net/m0_59164304/article/details/137628721
-2. 

@@ -277,9 +277,12 @@
    - AQS对资源访问方式的控制：共享模式 or 独占模式
    - AQS的框架包括什么？
      - 变量：
-       - state状态：volatile修饰，保证了可见性
-       - CLH队列：将想要访问资源的对象封装为一个Node
-       - ConditionObject队列
+       - `state`状态：`volatile`修饰，保证了可见性
+       - `CLH`队列：将想要访问资源的对象封装为一个`Node`
+         - Node的`waitStatus`状态
+       
+       ![CLH](./fig/CLH.png)
+       - `ConditionObject`队列
      - 方法：
        - 状态相关
          - getState()：返回同步状态 
@@ -417,3 +420,4 @@
 5. JVM线程池与OS线程的关系：https://blog.csdn.net/qq_51234063/article/details/124920208
 6. synchronized关键字：https://blog.csdn.net/m0_61814277/article/details/143648433
 7. AQS详解：https://blog.csdn.net/agonie201218/article/details/128150609
+8. AQS详解2：https://blog.csdn.net/javazejian/article/details/75043422

@@ -43,7 +43,7 @@
    - 【优化二】synchronized的锁消除
      - 在某些场景下锁不可能生效，JVM会自动消除锁，比如：
        ```java
-         public void add(String str1, String str2) {
+         public void add (String str1, String str2) {
              // 这个stringBuffer就属于不可能被共享的对象，JVM会自动消除内部的锁
              // 不会出现多个线程同时访问这个变量
              StringBuffer stringBuffer = new StringBuffer();
@@ -58,46 +58,46 @@
 
 ## 二、线程回收的流程
 1. 线程池中非核心线程的回收  
-   非核心线程的中会存在一个while循环，不断从阻塞队列中获取任务，当获取不到任务的时候，就会跳出循环释放线程资源。
-   ```java
-   // getTask方法。在获取task中
-   private Runnable getTask() {
-       // 超时标志
-       boolean timedOut = false;
-       // 循环
-       for (;;) {
-           int c = ctl.get();
-           // 1. 线程池状态为 SHUTDOWN 并且队列为空或者STOP的时候会返回 null, 释放当前线程
-           if (runStateAtLeast(c, SHUTDOWN) && (runStateAtLeast(c, STOP) || workQueue.isEmpty())) {
-               ...
-               return null;
-           }
-           // 2. 获取当前线程池中线程的数量
-           int wc = workerCountOf(c);
-           // 3. 当允许核心线程超时 或者 当前线程数量大于核心线程数时 timed = true
-           boolean timed = allowCoreThreadTimeOut || wc > corePoolSize;
-           // 4. timed == true 并且 timeOut == true 并且 队列任务为空且线程池线程存在的情况下，返回null, 释放当前线程
-           if ((wc > maximumPoolSize || (timed && timedOut))
-                   && (wc > 1 || workQueue.isEmpty())) {
-               // Worker 线程数减一操作
-               if (compareAndDecrementWorkerCount(c))
-                   return null;
-               continue;
-           }
-           try {
-               // 5. 这里是关键：timed==true 意思是线程数大于核心线程数的时候，从队列里面取值并加了个 keepAliveTime 超时时间，如果超过这个时间还没取到任务，就timedOut=true, 然后再次循环的时候，上面第4步的if 条件就满足了，就会return null, 然后就会释放线程了。
-               Runnable r = timed ?
-                       workQueue.poll(keepAliveTime, TimeUnit.NANOSECONDS) :
-                       workQueue.take();
-               if (r != null)
-                   return r;
-               timedOut = true;
-           } catch (InterruptedException retry) {
-               timedOut = false;
-           }
-       }
-   }
-   ```
+   非核心线程的代码中会存在一个while循环，不断从阻塞队列中获取任务，当获取不到任务的时候，就会跳出循环释放线程资源。
+    ```java
+    // getTask方法。在获取task中
+    private Runnable getTask() {
+        // 超时标志
+        boolean timedOut = false;
+        // 循环
+        for (;;) {
+            int c = ctl.get();
+            // 1. 线程池状态为 SHUTDOWN 并且队列为空或者STOP的时候会返回 null, 释放当前线程
+            if (runStateAtLeast(c, SHUTDOWN) && (runStateAtLeast(c, STOP) || workQueue.isEmpty())) {
+                ...
+                return null;
+            }
+            // 2. 获取当前线程池中线程的数量
+            int wc = workerCountOf(c);
+            // 3. 当允许核心线程超时 或者 当前线程数量大于核心线程数时 timed = true
+            boolean timed = allowCoreThreadTimeOut || wc > corePoolSize;
+            // 4. timed == true 并且 timeOut == true 并且 队列任务为空且线程池线程存在的情况下，返回null, 释放当前线程
+            if ((wc > maximumPoolSize || (timed && timedOut))
+                    && (wc > 1 || workQueue.isEmpty())) {
+                // Worker 线程数减一操作
+                if (compareAndDecrementWorkerCount(c))
+                    return null;
+                continue;
+            }
+            try {
+                // 5. 这里是关键：timed==true 意思是线程数大于核心线程数的时候，从队列里面取值并加了个 keepAliveTime 超时时间，如果超过这个时间还没取到任务，就timedOut=true, 然后再次循环的时候，上面第4步的if 条件就满足了，就会return null, 然后就会释放线程了。
+                Runnable r = timed ?
+                        workQueue.poll(keepAliveTime, TimeUnit.NANOSECONDS) :
+                        workQueue.take();
+                if (r != null)
+                    return r;
+                timedOut = true;
+            } catch (InterruptedException retry) {
+                timedOut = false;
+            }
+        }
+    }
+    ```
 2. 具体的释放逻辑是`processWorkerExit(w, completedAbruptly)`实现的。
    
 3. 
@@ -207,7 +207,7 @@
 
 ## 五、ReentrantLock可重入锁
 1. ReentrantLock的使用是显式的，因此照比synchronized的使用更加灵活。
-2. AQS抽象式队列同步器
+2. AQS抽象式队列同步器：构建了一套标准的实现多线程访问资源控制的框架       
    抽象式队列同步器（AbstractQueuedSynchronizer，简称AQS）是一个用来构建锁或者其他同步组件的基础框架，它使用了一个int成员变量`state`来表示同步状态，通过内置的FIFO队列来完成资源获取线程的排队工作，当状态为0时表示没有加锁，当状态大于0时表示有线程加锁。  
    AQS定义了一套多线程访问共享资源的同步器框架，许多同步类实现都依赖于它，如ReentrantLock、Semaphore、CountDownLatch等。   
    ![AQS基本结构](./fig/AQS1.png)  
@@ -235,22 +235,16 @@
        static final int CONDITION = -2;
        // 在共享模式中使用表示获得的同步状态会被传播
        static final int PROPAGATE = -3;
-   
        // 等待状态，存在CANCELLED、SIGNAL、CONDITION、PROPAGATE 4种
        volatile int waitStatus;
-   
        // 同步队列中前驱结点
        volatile Node prev;
-   
        // 同步队列中后继结点
        volatile Node next;
-   
        // 请求锁的线程
        volatile Thread thread;
-   
        // 等待队列中的后继结点，这个与Condition有关
        Node nextWaiter;
-   
        // 判断是否为共享模式
        final boolean isShared() {
            return nextWaiter == SHARED;
@@ -279,13 +273,36 @@
        - PROPAGATE：值为-3，与共享模式相关，在共享模式中，该状态标识结点的线程处于可运行状态。 
        - 0状态：值为0，代表初始化状态。
    - AQS的内部类`ConditionObject`：构建<font color='yellow'>等待队列</font>
-3. ReentrantLock与AQS之间的关系  
+3. AQS深入解读
+   - AQS对资源访问方式的控制：共享模式 or 独占模式
+   - AQS的框架包括什么？
+     - 变量：
+       - state状态：volatile修饰，保证了可见性
+       - CLH队列：将想要访问资源的对象封装为一个Node
+       - ConditionObject队列
+     - 方法：
+       - 状态相关
+         - getState()：返回同步状态 
+         - setState(int newState)：设置同步状态
+         - compareAndSetState(int expect, int update)：使用CAS设置同步状态
+         - isHeldExclusively()：当前线程是否持有资源
+       - 独占资源实现相关
+         - tryAcquire(int arg)：独占式获取资源，子类实现
+         - acquire(int arg)：独占式获取资源模板
+         - tryRelease(int arg)：独占式释放资源，子类实现
+         - release(int arg)：独占式释放资源模板
+       - 共享资源实现相关
+         - tryAcquireShared(int arg)：共享式获取资源，返回值大于等于0则表示获取成功，否则获取失败，子类实现
+         - acquireShared(int arg)：共享式获取资源模板
+         - tryReleaseShared(int arg)：共享式释放资源，子类实现
+         - releaseShared(int arg)：共享式释放资源模板
+4. ReentrantLock与AQS之间的关系  
    ![AQS与ReentrantLock](./fig/AQS2.png)
    - ReentrantLock的内部类Sync是抽象类，继承AQS，实现了tryRelease方法。
    - NonfairSync(非公平锁)、 FairSync(公平锁)则继承自Sync，实现了获取锁的tryAcquire()方法，ReentrantLock的所有方法调用都通过间接调用AQS和Sync类及其子类来完成的。
    - Node：AbstractQueuedSynchronizer 的内部类，用于构建虚拟队列(链表双向链表)，管理需要获取锁的线程。
    - ReentrantLock：实现了Lock接口的，其内部类有Sync、NonfairSync、FairSync，在创建时可以根据fair参数决定创建NonfairSync(默认非公平锁)还是FairSync。
-4. ReentrantLock的非公平锁的具体实现  
+5. ReentrantLock的非公平锁的具体实现  
    ![非公平锁流程图](./fig/AQS3.png)  
    - 获取同步状态：成功——获取并退出
    - 获取同步状态：失败
@@ -293,7 +310,7 @@
      - 队列是不是空：是空，创建并设置head节点；不是空，添加到队列的尾部。节点开始自旋
      - 前驱节点是head，直接获取同步状态；前驱节点不是head，线程挂起等待，被唤醒后检查前驱节点是不是head；
      - 获取成功：设置为head
-5. ReentrantLock的公平锁的具体实现
+6. ReentrantLock的公平锁的具体实现
    - 公平锁与非公平锁的最大差异在于：在使用CAS设置尝试设置state值前，调用了`hasQueuedPredecessors()`判断同步队列是否存在结点，如果存在必须先执行完同步队列中结点的线程，当前线程进入等待状态。
    - 这就是非公平锁与公平锁最大的区别，即公平锁在线程请求到来时先会判断同步队列是否存在结点，如果存在先执行同步队列中的结点线程，当前线程将封装成node加入同步队列等待。
    - 而非公平锁呢，当线程请求到来时，不管同步队列是否存在线程结点，直接尝试获取同步状态，获取成功直接访问共享资源，但请注意在绝大多数情况下，非公平锁才是我们理想的选择，毕竟从效率上来说非公平锁总是胜于公平锁。
@@ -399,3 +416,4 @@
 4. 机器CPU核心数与线程数量的关系：https://www.zhihu.com/question/429883009/answer/2814637253
 5. JVM线程池与OS线程的关系：https://blog.csdn.net/qq_51234063/article/details/124920208
 6. synchronized关键字：https://blog.csdn.net/m0_61814277/article/details/143648433
+7. AQS详解：https://blog.csdn.net/agonie201218/article/details/128150609

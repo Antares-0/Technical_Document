@@ -1,7 +1,9 @@
-package com.lxm.technical_code;
+//package com.lxm.technical_code;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author: liuxianming
@@ -42,9 +44,4 @@ public class TestingCode {
         return findOne.size() > findZero.size() ? findOne : findZero;
 
     }
-
-
-
-
-
 }

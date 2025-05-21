@@ -279,9 +279,12 @@
     2. 所有可能引起修改的代码块，都使用了synchronized进行同步，保证更新的时候只能有一个线程在操作这个对象
     3. synchronized(mutex)的对象实质上是这个Collections.synchronizedMap对象，因此在高并发场景下会存在性能瓶颈，性能不如ConcurrentHashMap
 
+## 五、LinkedHashMap
+
 
 参考资料：
 1. ConcurrentHashMap：https://blog.csdn.net/qq_24903931/article/details/82850170
 2. Collections.synchronizedMap：https://blog.csdn.net/weixin_45188218/article/details/135604178
 3. ConcurrentHashMap：https://blog.csdn.net/weixin_45188218/article/details/135596599
 4. 多线程rehash：https://coolshell.cn/articles/9606.html
+5. LinkedHashMap：https://blog.csdn.net/weixin_48890074/article/details/134201642

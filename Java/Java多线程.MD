@@ -205,7 +205,7 @@
    4. 资源有限场景——决定阻塞队列的配置  
       资源有限的场景，可以使用有大小的阻塞队列，保证资源不被耗尽  
 
-## 五、ReentrantLock可重入锁
+## 五、ReentrantLock可重入锁 & AQS抽象队列同步器
 1. ReentrantLock的使用是显式的，因此照比synchronized的使用更加灵活。
 2. AQS抽象式队列同步器：构建了一套标准的实现多线程访问资源控制的框架       
    抽象式队列同步器（AbstractQueuedSynchronizer，简称AQS）是一个用来构建锁或者其他同步组件的基础框架，它使用了一个int成员变量`state`来表示同步状态，通过内置的FIFO队列来完成资源获取线程的排队工作，当状态为0时表示没有加锁，当状态大于0时表示有线程加锁。  
@@ -510,7 +510,112 @@
          }
          ```
    - AQS的共享模式详解
-     - 
+     - 加锁过程
+       - 逻辑
+         - 获取arg个资源，获取成功直接成功，失败尝试重新获取
+         - 将当前线程包装成Node放到CLH队列的尾部，进入自旋流程
+         - 如果自旋过程中发现，前面的节点是head节点了，那就通过CAS执行资源获取
+         - 资源获取后对比独占模式要新增一个唤醒后续节点的流程
+         - 注意：如果现在还剩下3个资源，CLH队列中是A -- B -- C的模式，A需要5个资源，B需要2个资源，C需要1个资源，这时候会阻塞住
+       - ```java
+         // 加锁的逻辑，一次性尝试获取arg个共享资源
+         public final void acquireShared(int arg) {
+             if (tryAcquireShared(arg) < 0)
+                 // 如果获取失败
+                 doAcquireShared(arg);
+         }
+         
+         // tryAcquireShared
+         // 没有具体的实现，需要子类实现
+         // 返回值包括三种
+         // 负数：表示获取失败
+         // 0：表示获取成功，但是没有剩余资源了
+         // 正数：表示获取成功，包含剩余资源
+         
+         // doAcquireShared
+         private void doAcquireShared(int arg) {
+             // 加入队列尾部
+             final Node node = addWaiter(Node.SHARED);
+             boolean failed = true;
+             try {
+                 boolean interrupted = false;
+                 // CAS自旋
+                 for (;;) {
+                     final Node p = node.predecessor();
+                     // 判断前驱结点是否是head
+                     if (p == head) {
+                         // 尝试获取一定数量的锁
+                         int r = tryAcquireShared(arg);
+                         if (r >= 0) {
+                             // 获取锁成功，而且还有剩余资源，就设置当前结点为head，并继续唤醒下一个线程
+                             // Propagate -- 传播
+                             setHeadAndPropagate(node, r);
+                             // 让前驱结点去掉引用链，方便被GC
+                             p.next = null; // help GC
+                             if (interrupted)
+                                 selfInterrupt();
+                             failed = false;
+                             return;
+                         }
+                     }
+                     // 获取失败，跟独占模式一样，改前驱结点waitStatus为-1，并且当前线程挂起，等待被唤醒
+                     if (shouldParkAfterFailedAcquire(p, node) && parkAndCheckInterrupt())
+                         interrupted = true;
+                 }
+             } finally {
+                 if (failed)
+                     cancelAcquire(node);
+             }
+         }
+         
+         // 获取锁成功并将这个状态持续下去，传播给后面的等待节点
+         private void setHeadAndPropagate(Node node, int propagate) {
+             Node h = head;
+             // head指向自己
+             setHead(node);
+             // 如果还有剩余量，继续唤醒下一个邻居线程
+             if (propagate > 0 || h == null || h.waitStatus < 0) {
+                 Node s = node.next;
+             if (s == null || s.isShared())
+                 doReleaseShared();
+             }
+         }
+         ```
+     - 释放过程
+       - 逻辑
+         - 释放资源 + 唤醒后续节点
+       - ```java
+         public final boolean releaseShared(int arg) {
+             if (tryReleaseShared(arg)) {
+                 doReleaseShared();
+                 return true;
+             }
+             return false;
+         }
+         
+         // tryReleaseShared需要子类实现
+         
+         // doReleaseShared方法
+         private void doReleaseShared() {
+             for (;;) {
+                 // 获取等待队列中的head结点
+                 Node h = head;
+                 if (h != null && h != tail) {
+                     int ws = h.waitStatus;
+                     // head结点waitStatus = -1,唤醒下一个结点对应的线程
+                     if (ws == Node.SIGNAL) {
+                         if (!compareAndSetWaitStatus(h, Node.SIGNAL, 0))
+                             continue;           
+                         // 唤醒后继结点
+                         unparkSuccessor(h);
+                     } else if (ws == 0 && !compareAndSetWaitStatus(h, 0, Node.PROPAGATE))
+                         continue;                
+                 }
+                 if (h == head)                 
+                     break;
+             }
+         }
+         ```
 4. ReentrantLock与AQS之间的关系  
    ![AQS与ReentrantLock](./fig/AQS2.png)
    - ReentrantLock的内部类Sync是抽象类，继承AQS，实现了tryRelease方法。

@@ -92,11 +92,17 @@
 
 
 
-## 三、三级缓存循环依赖
+
+## 三、Java的AOP怎么实现的
+1. Java的AOP有两种实现模式，JDK动态代理和CGLib代理
+2. 
+
+
+## 四、三级缓存循环依赖
 
 
 
-## 四、Spring自定义标签的使用
+## 五、Spring自定义标签的使用
 1. 使用原则
    ```txt
    1.创建需要扩展的组件
@@ -109,13 +115,61 @@
 3. 因此某些Spring插件的原理也就显而易见了，通过Spring提供的自定义标签加载机制，来实现某些定制化逻辑。
 
 
-## 五、Spring默认的bean是单例的还是原型的？Spring怎样创建对象？
-1. 默认是单例模式，
-2. Spring创建对象的
+## 六、Spring默认的bean是单例的还是原型的？Spring怎样创建对象？
+1. 默认是单例模式`singleton`
+2. Spring创建对象的基本流程（xml--beanDefinition--创建对象）
+   - 从Xml文档中解析对象的基本定义
+   - 将对象基本定义封装到beanDefinition中
+   - 创建Bean对象，需要找到合适的 构造器 + 对应的参数(参考Spring源码中寻找构造器的部分)，并调用反射创建对象
+3. 
 
 
-## 六、Spring中常用的设计模式包括哪些？
+## 七、Spring中常用的设计模式包括哪些？
 1. 
+
+
+## 八、Spring框架的设计思想
+### （一）Spring框架设计：扫描注解 -- 从xml中加载定义到BeanDefinition中 -- 根据bd创建对象
+1. Spring扫描组件
+   - 扫描的是编译后的class文件
+   - 扫描到所有带Spring组件的注解，挨个进行加载
+2. Spring加载对象beanDefinition
+   - 为什么不直接创建对象，要用beanDefinition承接对象？
+     - 不确定是不是单例的对象，如果是单例的，每次从单例池中获取就可以
+     - 不是单例的，每次都创建一个新的对象
+3. Spring根据beanDefinition获取bean
+   - 寻找构造器创建对象
+     - 构造器匹配
+     - 构造对象并实现依赖注入
+   - 数据记录：
+     - beanDefinition池：根据beanName获取对应的beanDefinition，根据beanDefinition创建对象
+     - singleton池：用于记录创建好的单例对象
+4. Spring创建对象 & AOP等
+   - 依赖注入后实现各种初始化逻辑，准备bean
+   - AOP需要创建各种代理，JDK动态代理或者CGLib动态代理
+
+ 
+### （二）Spring的bean生命周期：实例化 -- 属性注入 -- 初始化 -- ready -- 销毁
+【个人理解：属性注入完成后，对JVM层面来说，这个对象已经基本可用；对业务层面上，需要继续进行初始化】
+1. 实例化：调用构造器创建对象
+   - Spring中涉及到怎样匹配构造器，找到合适的构造器
+2. 属性注入：依赖注入
+3. Aware回调：
+   - BeanNameAware回调：主要是用来设置beanName的
+   - BeanFactoryAware回调：主要是用来设置BeanFactory的，BeanFactory是用来获取对象的特殊Factory
+   - ApplicationContextAware回调：类似BeanFactoryAware，提供的功能更强大
+4. 后处理器处理（初始化之前）：`BeanPostProcessor#postProcessBeforeInitialization`
+5. 自定义初始化
+   - `@PostConstruct`
+   - `InitializingBean#afterPropertiesSet`
+   - `init-method`
+6. 后处理器处理（初始化之后）：`BeanPostProcessor#postProcessAfterInitialization`
+7. Bean准备完成（如果有AOP，需要创建代理对象，将代理对象用于被业务调用）
+8. 销毁前处理`@PreDestroy`
+9. 销毁处理
+   - `DisposableBean#destroy`
+   - `destroy-method`
+
 
 
 
@@ -126,3 +180,6 @@
 2. Spring事务：https://blog.csdn.net/minghao0508/article/details/124374637
 3. @Transactional的失效：https://blog.csdn.net/qq_57581439/article/details/132086303
 4. Spring自定义标签的使用：《Spring源码深度解析》第四章
+5. JDK动态代理：https://blog.csdn.net/m0_64231944/article/details/134602559
+6. 手写Spring源码视频：https://www.bilibili.com/video/BV1tR4y1F75R
+7. 

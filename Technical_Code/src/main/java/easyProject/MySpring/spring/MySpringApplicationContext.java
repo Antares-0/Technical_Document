@@ -1,12 +1,15 @@
 package easyProject.MySpring.spring;
 
 
+import easyProject.MySpring.service.MyPostProcessor;
 import org.springframework.util.StringUtils;
 
 import java.beans.Introspector;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class MySpringApplicationContext {
@@ -18,6 +21,9 @@ public class MySpringApplicationContext {
 
     // 单例池
     private ConcurrentHashMap<String, Object> singletonCache = new ConcurrentHashMap<>();
+
+    // 处理器
+    private List<BeanPostProcessor> beanPostProcessorList = new ArrayList<>();
 
 
     public MySpringApplicationContext(Class clazz) {
@@ -43,6 +49,12 @@ public class MySpringApplicationContext {
                             String className = absolutePath.substring(absolutePath.indexOf("easyProject"), absolutePath.indexOf(".class"));
                             Class<?> aClass = classLoader.loadClass(className.replace("/", "."));
                             if (aClass.isAnnotationPresent(Component.class)) {
+                                // 如果是processor
+                                // isAssignableFrom：判断参数类型是不是本类型的实现
+                                // instanceOf不适用
+                                if (BeanPostProcessor.class.isAssignableFrom(aClass)) {
+                                    beanPostProcessorList.add((BeanPostProcessor) aClass.newInstance());
+                                }
                                 String beanName = aClass.getAnnotation(Component.class).value();
                                 if (StringUtils.isEmpty(beanName)) {
                                     // 首字母小写方法
@@ -93,9 +105,31 @@ public class MySpringApplicationContext {
                 if (field.isAnnotationPresent(Autowired.class)) {
                     field.setAccessible(true);
                     // 实现自动注入
+                    // filed instance object
                     field.set(o, getBean(field.getName()));
                 }
             }
+
+            // 实现了这个接口，就setBeanName
+            if (o instanceof BeanNameAware) {
+                ((BeanNameAware) o).setBeanName(beanName);
+            }
+
+            // 遍历处理器
+            for (BeanPostProcessor postProcessor : beanPostProcessorList) {
+                o = postProcessor.beforeInitialization(beanName, o);
+            }
+
+            // 初始化
+            if (o instanceof InitializingBean) {
+                ((InitializingBean) o).afterPropertiesSet();
+            }
+
+            for (BeanPostProcessor postProcessor : beanPostProcessorList) {
+                o = postProcessor.afterInitialization(beanName, o);
+            }
+
+
         } catch (InstantiationException e) {
             throw new RuntimeException(e);
         } catch (IllegalAccessException e) {

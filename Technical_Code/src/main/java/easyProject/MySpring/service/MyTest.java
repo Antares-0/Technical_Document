@@ -8,8 +8,8 @@ public class MyTest {
 
         MySpringApplicationContext mySpringApplicationContext = new MySpringApplicationContext(AppConfig.class);
 
-        MyService myService = (MyService) mySpringApplicationContext.getBean("myService");
-        myService.test();
+        MyInterface myInterface = (MyInterface) mySpringApplicationContext.getBean("myService");
+        myInterface.test();
 
     }
 

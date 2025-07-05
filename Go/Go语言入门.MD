@@ -10,27 +10,158 @@
    2. 编译型语言、解释型语言
       - 编译型语言：通过预编译转变为机器码，性能较高，Java、Go、C++
       - 解释型语言：逐行解释代码，性能较低，Python、JavaScript
-   3. 
+   3. java是值传递，而不是引用传递；go也是值传递，而不是引用传递
+      - 值传递：调用函数的时候，将传输的对象复制一份给新函数
+      - 引用传递：调用函数的时候，将传输的对象直接给新函数
 2. 环境配置
    1. 去[链接](https://go.dev/dl/)下载go的开发包，相当于JDK，安装后使用`go version`确认
    2. 在goland中配置该go开发包
 3. Go语言的运行
-   1. 运行main.go文件
-      ```bash
-      # 方式一 直接运行
-      go run main.go
-      # 方式二 两步运行
-      go build main.go # 会生成main可执行文件 
-      ./main # 直接执行
-      ```
-   2. 
-   
-4. 
+   - 运行main.go文件
+     ```bash
+     # 方式一 直接运行
+     go run main.go
+     # 方式二 两步运行
+     go build main.go # 会生成main可执行文件 
+     ./main # 直接执行
+     ```
 
 
 
 ## 二、Go语言特性语法
-1. 
+1. go语言的大括号必须与上一个语句在同一行
+   ```go
+   // right
+   for i := 1; i < 10; i++ {
+       // inner
+   }
+   // wrong
+   for i := 1; i < 10; i++ 
+   {
+       // inner
+   } 
+   ```
+2. 一些常用API
+   1. 标准输入
+      ```go
+      // 标准输入
+      import "os"
+      import "bufio"
+      import "fmt"
+      func main() {
+		  input := bufio.NewScanner(os.Stdin)
+          for input.Scan() {
+              fmt.Printf(input.Text())
+          }
+      }
+      ```
+   2. switch可以没有操作数，相当于多个`if`的直接堆叠
+      ```go
+      func switchTest(x int) {
+          switch {
+              case x > 0:
+                  return +1
+              case x < 0:
+                  return -1
+              default:
+                  return 0
+          }
+      }
+      ```
+3. 编程约定（程序结构）：
+   - 如果一个实体在函数中声明，它只在函数局部有效。如果声明在函数外，它将对包里面的所有源文件可见。实体的第一个字母的大小写决定其可见性是否跨包。
+      ```go
+      // fmt.Printf方法，首字母大写，表示包外可见
+      ```
+   - 包名本身总是由小写字母构成
+     ```go
+     // fmt包，本身是小写的
+     ```
+   - 短变量声明：`name := expression`
+     - 短变量声明对应的是完整变量声明
+       ```go
+       // 完整变量声明
+       var myValue int = 2
+       // 短变量声明
+       myValue := 2
+       ```
+     - 短变量声明不需要声明所有在左边的变量，如果有的变量已经赋值了，那就相当于覆盖
+       ```go
+       // 第一次声明
+       in, err := os.Open(inFileUrl)
+       // 第二次，声明out同时覆盖err
+       out, err := os.Create(createFileUrl)
+       ```
+     - 短变量声明最少声明一个新变量，否则编译不通过，这种情况可以直接使用赋值来实现
+       ```go
+       // 第一次声明
+       f, err := os.Open(inFileUrl)
+       // 第二次，声明out同时覆盖err
+       f, err := os.Create(createFileUrl) // 编译失败
+       f, err = os.Create(createFileUrl)
+       ```
+   - <font color='yellow'>指针（Java程序员知识盲区）：指针的值是一个变量的地址</font>
+     - 使用指针的意义在于，可以不知道变量名的情况下间接读取或者更新变量的值
+     - 指针家族nameSpace
+       ```go
+       // & 取地址操作符
+       x := 2
+       pointer := &x // 获取了x的指针，并命名为pointer
+       // pointer的类型是 (* int)，叫做整型指针
+       pointerValue := *pointer 
+       ```
+     - 指针类型的零值是`nil`，也就是说当一个指针类型的变量没有赋值的时候，它的值是`nil`
+       ```go
+       // pointer的默认值是nil
+       var pointer *int
+       // 所以判断指针有没有指向一个对象，可以通过 pointer != nil 来确定
+       ```
+     - 指针是可以比较的，当两个指针指向同一个对象或都是`nil`的时候，相等
+       ```go
+       var x, y int
+       fmt.Println(&x == &y, &x == nil) // false true
+       ```
+     - 函数返回局部变量的地址是非常安全的
+       ```go
+       func f() *int {
+           x := 2
+		   return &x
+       }
+       ```
+   - `new`函数
+     - 注意：`new`函数返回的是地址
+       ```go
+       p := new(int)
+       fmt.Println(*p) // 0
+       *p = 2
+       fmt.Println(*p) // 2
+       ```
+     - `new`函数只是一种简便写法，方便直接创建一个类型为Type的对象
+     - `new`是一个函数，不是一个预设的关键字，所以可以创建名称为`new`的变量
+       ```go
+       func delta(old, new int) int {
+           return new - old
+       }
+       ```
+   - 交换变量
+     ```go
+     a := 1
+     b := 2
+     a, b = b, a
+     ```
+   - 空标识符
+     ```go
+     // for循环
+     for _, name := range os.Args[1:] {
+         // inner
+     }
+     // 返回值
+     _, err = io.Copy(dts, src)
+     ```
+   - 在任何比较中，第一个操作数和第二个操作数必须是可以赋值的才可以
+4. 常用数据结构及算法题的使用
+   - 
+5. 项目中使用的特殊注意事项
 
 
 

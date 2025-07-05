@@ -6,7 +6,6 @@
    - BUG含义：某一个静态类的mock在多行测试中被多次引用
    - 解决方案：将静态类的Mock语句放在方法的given语句内，而且将多行测试拆分为一个一个的子方法进行测试
    - 参考文档：https://github.com/mockito/mockito/issues/2754
-2. BUG2
 
 
 

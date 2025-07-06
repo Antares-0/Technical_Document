@@ -1,4 +1,4 @@
-# Go语言入门（Java程序员视角）
+# Go语言学习（Java程序员视角）
 
 
 ## 一、Go语言核心优势及环境配置
@@ -25,8 +25,15 @@
      go build main.go # 会生成main可执行文件 
      ./main # 直接执行
      ```
-
-
+   - 【main.go文件的package必须是main】运行报错：`The 'main' file has the non-main package or does not contain the 'main' func`
+     ```txt
+     go语言的main方法的头，package必须是main，这点跟Java不同，需要注意
+     package main
+     
+     import (
+         "fmt"
+     )
+     ```
 
 ## 二、Go语言特性语法
 1. go语言的大括号必须与上一个语句在同一行
@@ -152,6 +159,8 @@
    - 空标识符
      ```go
      // for循环
+     // 第一个是index，第二个是具体的值
+     // 不需要index的时候也可以写成index, _
      for _, name := range os.Args[1:] {
          // inner
      }
@@ -159,6 +168,66 @@
      _, err = io.Copy(dts, src)
      ```
    - 在任何比较中，第一个操作数和第二个操作数必须是可以赋值的才可以
+   - 类型声明：类型声明声明一个新的命名类型，它和某个已有类型使用同样的底层类型，只是一个别名的作用，防止混淆
+     - 别名功能
+       ```go
+       type myType float64
+       func getMyType(x myType) {
+           return myType(0.66 + 0.88)
+       }
+       ```
+     - 支持计算
+       ```go
+       myValue := myType(0.9) + myType(0.8)
+       ```
+   - go的变量声明是可以重名的，这一点与Java部分类似
+     - 变量可见性问题1：if中的变量对应着else中也可见
+       ```go
+       if f, err := os.Open(fname); err != nil {
+           return err
+       } else {
+           // 注意，f和err在这里是可见的！！
+           f.Stat()
+       }
+       ```
+     - 变量可见性问题2：一个隐藏的bug
+       - go语言环境下，这个问题是这样的：局部变量pwd没有被使用，全局变量也没有被赋值，因为init函数的pwd与全局的pwd是两个变量
+         ```go
+         var pwd string
+         func init() {
+             pwd, err := os.Getwd() // 编译错误，程序发现了没有使用的cwd变量
+             if err != nil {
+                 log.Fatalf("... %v", err)
+             }
+             // 如果多了下面这行日志，问题就会非常隐蔽了，这时候编译不会报错，因为后面使用到了pwd
+             // log.Printf("%s", pwd)
+         }
+         // 出现问题的原因在于，init函数内部定义了自己的cwd，当init方法内部需要检查cwd有没有用到的时候，编译器报错
+         ```
+       - go语言环境下，修复这个问题的简单办法：
+         ```go
+         var pwd string
+         func init() {
+             var err error
+             // 注意到这里是赋值语句，不是声明语句，这样全局变量就被赋值了
+             pwd, err = os.Getwd()
+             if err != nil {
+                 log.Fatalf("%v", err)
+             }
+         }
+         ```
+       - java语言环境下，这个问题是这样的
+         ```java
+         public class student {
+             private String name;
+             public Student(String name) {
+                 // 错误
+                 name = name;
+                 // 应当是 this.name = name;
+             }
+         }
+         ```
+     
 4. 常用数据结构及算法题的使用
    - 
 5. 项目中使用的特殊注意事项
@@ -182,6 +251,15 @@
    5. 
 2. 
 
+
+## 四、Go底层原理
+1. 编译顺序和初始化顺序
+   - 编译器会按照文件名的Unicode代码点顺序（字典序）来处理同一个包下的多个go文件
+   - 但是变量初始化和`init()`函数的指定顺序由依赖关系和文件顺序共同决定
+   - 包的初始化按照程序中导入的顺序来执行，依赖顺序优先
+   - 初始化过程是从下到上的，main包最后初始化
+2. 当编译器遇到一个名字的引用是，将从最内层的封闭词法块到全局寻找其声明
+3. 
 
 参考资料：
 1. 解决goland无法解析git类引入的问题：https://blog.csdn.net/qq_38018994/article/details/125745076

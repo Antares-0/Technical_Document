@@ -108,7 +108,7 @@
    1.创建需要扩展的组件
    2.定义XSD文件描述组件内容
    3.创建一个文件，实现BeanDefinitionParser接口，用来解析XSD文件中的定义和组件定义
-   4.创建Handler文件，扩展字NamespaceHandlerSupport,目的是将组件注册到Spring容器
+   4.创建Handler文件，扩展自NamespaceHandlerSupport,目的是将组件注册到Spring容器
    5.编写Spring.handlers和Spring.schemas文件
    ```
 2. 具体实例参考`src/main/java/com/lxm/technical_code/CustomTag`及《Spring源码深度解析》第四章
@@ -182,4 +182,5 @@
 4. Spring自定义标签的使用：《Spring源码深度解析》第四章
 5. JDK动态代理：https://blog.csdn.net/m0_64231944/article/details/134602559
 6. 手写Spring源码视频：https://www.bilibili.com/video/BV1tR4y1F75R
-7. 
+7. spring-boot源码：https://github.com/spring-projects/spring-boot
+8. spring源码：https://github.com/spring-projects/spring-framework

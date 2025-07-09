@@ -2,7 +2,7 @@
 
 ## 一、git提交规范
 1. git在提交代码的时候需要填写message，该部分可以指定固定格式
-2. 目前相对普遍使用的是Angular规范，该规范的基本内容如下：
+2. 目前相对普遍使用的是`Angular`规范，该规范的基本内容如下：
    - 基本格式：`[type(optinal scope):description] [optional body] [optional footer(s)]`
    - type字段：【必填】表明本次提交的类型
    - scope字段：【可选】可选内容，表明本次修改的代码位置
@@ -26,8 +26,6 @@
 
 ## 二、Idea工具
 可以使用Git Commit Template插件方便快速生成git信息
-
-
 
 
 参考文档：

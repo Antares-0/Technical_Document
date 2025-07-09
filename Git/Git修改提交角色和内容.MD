@@ -18,7 +18,6 @@
     git commit --amend --author="liuxianming@example.com>" # 修改作者信息
    ```
 
-
 ## 二、git配置提交角色信息
 1. 全局配置 - 基本流程
    ```bash

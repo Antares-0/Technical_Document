@@ -18,8 +18,6 @@
    ```bash
    docker ps
    ```
-5. docker查看
-
 
 ## 二、Docker-compose命令
 1. 安装Docker-compose：注意docker-compose与docker要有对应的版本
@@ -37,7 +35,16 @@
    ```bash
    # 添加权限
    sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
-   
+   # 执行命令 (-d 在后台运行)
+   docker-compose up -d
    ```
-4. 
+4. docker-compose服务管理
+   - 查看运行中的容器和服务
+     ```bash
+     docker-compose ps
+     ```
+   - 停止和移除服务
+     ```bash
+     docker-compose stop
+     ```
 

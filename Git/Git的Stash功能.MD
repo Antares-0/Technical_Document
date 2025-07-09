@@ -16,16 +16,12 @@
    | git stash branch {branchName} [stashName] |        创建并切换到一个新分支来读取指定的存储        |  
 3. stash是一个堆栈结构，存在多次提交的时候要注意
 
-
-
 ## 二、在idea中使用stash
 1. stash（临时保存）
    ![stash](./fig/stash.png)
 2. apply（应用保存的stash）
    ![](./fig/stash2.png)   
    ![](./fig/stash3.png)
-   
-
 
 参考文档
 1. https://blog.csdn.net/Bb15070047748/article/details/139791345

@@ -12,15 +12,6 @@
    - 数目上的区别：VO会根据需要删减一些字段
    - 值的区别：VO可能需要针对DTO传过来的值进行一些处理
 
-
-
-
-
-
-
-
-
-
 参考文档：
 1. https://zhuanlan.zhihu.com/p/102389552
 2. https://www.cnblogs.com/jiuchenchen/p/16524084.html

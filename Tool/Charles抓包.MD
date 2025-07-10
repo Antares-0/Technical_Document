@@ -21,8 +21,9 @@
 
 参考资料
 1. 官网下载地址：https://www.charlesproxy.com/
-2. 抓包详细教程：https://blog.csdn.net/only____one/article/details/147902788
+2. 抓包详细教程[推荐]：https://blog.csdn.net/only____one/article/details/147902788
 3. 将Charles的请求导出到Postman：https://zhuanlan.zhihu.com/p/713603800
+4. 完整教程：https://blog.csdn.net/qq_15283475/article/details/127838576
 
 
 

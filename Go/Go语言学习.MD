@@ -227,6 +227,26 @@
              }
          }
          ```
+   - <font color='yellow'>go语言字符串长度与Java显著不同</font>
+     ```go
+     s := "hello, 世界"
+     fmt.Println(len(s)) // 13
+     fmt.Println(utf8.RuneCountInString(s)) // 9
+     // go统一使用utf8编码
+     
+     // range函数支持utf8解码
+     n := 0
+     for _, _ = range s {
+        n++
+     }
+     fmt.Println(n) // 9
+     ```
+   - 将一个整数值转换为字符串，值按照文字符号类型解读
+     ```go
+     fmt.Println(string(65)) // "A"
+     // 非法
+     fmt.Println(string(1111111165)) // �
+     ```
      
 4. 常用数据结构及算法题的使用
    - 常用集合
@@ -244,6 +264,10 @@
          ```
        - 字符串比较：go的字符串可以直接按照字典序比较，使用`>`和`<`和`==`等
        - 字符串内部不可变，字符串内部的值无法修改`s[0] = 'a'`无法赋值
+     - strings包：搜索、替换、比较、修整、切分与连接字符串
+     - bytes包
+     - strconv包
+     - unicode包
 5. 项目中使用的特殊注意事项
    - `fmt.Printf()`可以使用`%[1]`这种形式重复使用某一个变量
      ```go

@@ -13,6 +13,7 @@
    3. java是值传递，而不是引用传递；go也是值传递，而不是引用传递
       - 值传递：调用函数的时候，将传输的对象复制一份给新函数
       - 引用传递：调用函数的时候，将传输的对象直接给新函数
+      - 注意：java在数组的传递类型上，隐式使用了引用传递，但是go在数组的传递类型上，使用了值传递，因此使用指针
 2. 环境配置
    1. 去[链接](https://go.dev/dl/)下载go的开发包，相当于JDK，安装后使用`go version`确认
    2. 在goland中配置该go开发包
@@ -247,9 +248,26 @@
      // 非法
      fmt.Println(string(1111111165)) // �
      ```
+   - 无类型常量：有些常量在声明是是无类型的，它维持了较高的精度（方便在后续可以转换），具体类型包括6种
+   - Go的数据类型分为4大类
+     - 基础类型：数字、字符串、布尔类型
+       - 整数：int8、int16、int32、int64、uint8、uint16、uint32、uint64、int、uint
+       - 浮点数：float32、float64
+       - 复数：complex64、complex128（内部分别是两个float32、float64组成实部和虚部）
+       - 布尔值：true、false，无法被转换为数值
+       - 字符串：string
+     - 聚合类型：数组、slice、map、结构体
+       - 数组：
+       - slice：
+       - map：
+       - 结构体：
+     - 引用类型：指针、slice、map、函数、通道channel
+     - 接口类型
      
 4. 常用数据结构及算法题的使用
    - 常用集合
+     - 数组：`var arr [3]int`
+     - 
    - 标准模版
      - math包
        - `math.Exp(x)`：自然底数e的x次方
@@ -265,9 +283,29 @@
        - 字符串比较：go的字符串可以直接按照字典序比较，使用`>`和`<`和`==`等
        - 字符串内部不可变，字符串内部的值无法修改`s[0] = 'a'`无法赋值
      - strings包：搜索、替换、比较、修整、切分与连接字符串
-     - bytes包
+     - bytes包：
+       - `bytes.Buffer`类似Java的`StringBuilder`
+         ```go
+         var buf bytes.Buffer 
+         buf.writeByte('[')
+         buf.writeString("a,b")
+         buf.writeByte(']')
+         ```
+       - 其他常用api
+         - `func Contains(s, subslice []byte) bool`
+         - `func Conut(s, sep[] byte) int`
+         - `func Fields(s []byte) [][]byte`
+         - `func HasPrefix(s, prefix []byte) bool`
+         - `func Join(s [][]byte, sep []byte) []byte`
      - strconv包
-     - unicode包
+       - 整数与数字转换
+         ```go
+         strconv.Itoa() // Integer to ASCII
+         strconv.Atoi() // ASCII to Integer
+         strconv.ParseInt("123", 10, 64) // 将字符串转换成10进制的int64
+         ```
+       - 数字与整数转换
+     - unicode包：`IsDigit`、`IsLetter`、`IsUpper`、`IsLower`
 5. 项目中使用的特殊注意事项
    - `fmt.Printf()`可以使用`%[1]`这种形式重复使用某一个变量
      ```go
@@ -283,6 +321,17 @@
          // 第一个字符串：string1，第一个字符串第二遍string1， 第二个字符串第一遍string2
      }
      ```
+   - go项目的结构
+     ```txt
+     | ---- goProject
+                 | ---- src
+                         | ---- go_code 
+                                    | ---- project01
+                                               | ---- main
+                                                        | ---- hello.go
+                                               | ---- package
+     ```
+     - 所有的go文件都必须归属于一个包
    - 
 6. 
 
@@ -327,7 +376,9 @@
    //  |---- s len:12
    //  |---- hello len:5
    ```
-4. 
+4. Golang执行流程
+   -  
+5. 
 
 参考资料：
 1. 解决goland无法解析git类引入的问题：https://blog.csdn.net/qq_38018994/article/details/125745076

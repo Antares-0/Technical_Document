@@ -4,6 +4,8 @@
 1. 去官网下载[1]
 2. 软件基本原理：Charles相当于一层代理，所有的请求都是通过通过Charles转发给服务器的，因此可以在软件上获取所有的流量
 3. Charles可以篡改请求，也可以篡改响应
+4. 破解版见[5] 
+5. 目前5.0.1版本的license_key是：`b03793ace3586d03ed`
 
 ## 二、抓包HTTP
 1. 抓包移动端手机
@@ -24,6 +26,7 @@
 2. 抓包详细教程[推荐]：https://blog.csdn.net/only____one/article/details/147902788
 3. 将Charles的请求导出到Postman：https://zhuanlan.zhihu.com/p/713603800
 4. 完整教程：https://blog.csdn.net/qq_15283475/article/details/127838576
+5. 破解教程：https://www.cnblogs.com/neozheng/p/18960535
 
 
 

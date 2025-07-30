@@ -1,40 +1,7 @@
 # Go语言学习（Java程序员视角）
 
 
-## 一、Go语言核心优势及环境配置
-1. 核心优势
-   1. go语言的核心优势就是高并发场景
-      - 使用go开发的各种应用比如：Docker、k8s、TiDB、InfluxDB 
-      - 使用C++开发的应用比如：MySQL、MongoDB 
-      - 使用Java开发的应用比如：Hadoop、Spring
-   2. 编译型语言、解释型语言
-      - 编译型语言：通过预编译转变为机器码，性能较高，Java、Go、C++
-      - 解释型语言：逐行解释代码，性能较低，Python、JavaScript
-   3. java是值传递，而不是引用传递；go也是值传递，而不是引用传递
-      - 值传递：调用函数的时候，将传输的对象复制一份给新函数
-      - 引用传递：调用函数的时候，将传输的对象直接给新函数
-      - 注意：java在数组的传递类型上，隐式使用了引用传递，但是go在数组的传递类型上，使用了值传递，因此使用指针
-2. 环境配置
-   1. 去[链接](https://go.dev/dl/)下载go的开发包，相当于JDK，安装后使用`go version`确认
-   2. 在goland中配置该go开发包
-3. Go语言的运行
-   - 运行main.go文件
-     ```bash
-     # 方式一 直接运行
-     go run main.go
-     # 方式二 两步运行
-     go build main.go # 会生成main可执行文件 
-     ./main # 直接执行
-     ```
-   - 【main.go文件的package必须是main】运行报错：`The 'main' file has the non-main package or does not contain the 'main' func`
-     ```txt
-     go语言的main方法的头，package必须是main，这点跟Java不同，需要注意
-     package main
-     
-     import (
-         "fmt"
-     )
-     ```
+
 
 ## 二、Go语言特性语法
 1. go语言的大括号必须与上一个语句在同一行
@@ -257,7 +224,7 @@
        - 布尔值：true、false，无法被转换为数值
        - 字符串：string
      - 聚合类型：数组、slice、map、结构体
-       - 数组：长度不可变，`[2]int`与`[3]int`是不同的数组，同长度同类型的数组可以进行直接比较，go中的数组是值传递
+       - 数组：长度不可变，`[2]int`与`[3]int`是不同的数组，同长度同类型的数组可以进行直接比较（比较的是里面元素的内容是否相等），go中的数组是值传递
        - slice：`[]int`长度可变的，底层数据结构用到了数组，不能比较
        - map：
        - 结构体：
@@ -266,8 +233,8 @@
      
 4. 常用数据结构及算法题的使用
    - 常用集合
-     - 数组：`var arr [3]int`
-     - 
+     - 数组（固定长度的slice）：`var arr [3]int`
+     - slice：`var arr []int`，`make([]int, len, cap)`
    - 标准模版
      - math包
        - `math.Exp(x)`：自然底数e的x次方

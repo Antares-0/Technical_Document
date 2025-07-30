@@ -63,6 +63,7 @@
    System.out.println("验证姓名：" + stu.name);
    ```
 5. 反射调用方法`class.getMethod(方法名称, .class).invoke(实例对象, 参数)`
+6. 反射获取对象上的信息
 
 
 

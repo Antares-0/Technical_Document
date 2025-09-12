@@ -279,7 +279,11 @@
     2. 所有可能引起修改的代码块，都使用了synchronized进行同步，保证更新的时候只能有一个线程在操作这个对象
     3. synchronized(mutex)的对象实质上是这个Collections.synchronizedMap对象，因此在高并发场景下会存在性能瓶颈，性能不如ConcurrentHashMap
 
-## 五、LinkedHashMap
+## 五、HashMap的线程安全版本之三：HashTable
+1. 
+
+
+## 六、LinkedHashMap
 
 
 参考资料：

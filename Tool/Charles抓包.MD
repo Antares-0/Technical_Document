@@ -21,6 +21,13 @@
    - 使用filter过滤请求
    - 右键请求，获取cUrl副本，使用Postman的导入功能
 
+## 三、Map功能
+
+
+
+## 四、Rewrite功能
+
+
 参考资料
 1. 官网下载地址：https://www.charlesproxy.com/
 2. 抓包详细教程[推荐]：https://blog.csdn.net/only____one/article/details/147902788

@@ -148,67 +148,7 @@
        ```go
        myValue := myType(0.9) + myType(0.8)
        ```
-   - go的变量声明是可以重名的，这一点与Java部分类似
-     - 变量可见性问题1：if中的变量对应着else中也可见
-       ```go
-       if f, err := os.Open(fname); err != nil {
-           return err
-       } else {
-           // 注意，f和err在这里是可见的！！
-           f.Stat()
-       }
-       ```
-     - 变量可见性问题2：一个隐藏的bug
-       - go语言环境下，这个问题是这样的：局部变量pwd没有被使用，全局变量也没有被赋值，因为init函数的pwd与全局的pwd是两个变量
-         ```go
-         var pwd string
-         func init() {
-             pwd, err := os.Getwd() // 编译错误，程序发现了没有使用的cwd变量
-             if err != nil {
-                 log.Fatalf("... %v", err)
-             }
-             // 如果多了下面这行日志，问题就会非常隐蔽了，这时候编译不会报错，因为后面使用到了pwd
-             // log.Printf("%s", pwd)
-         }
-         // 出现问题的原因在于，init函数内部定义了自己的pwd，当init方法内部需要检查pwd有没有用到的时候，编译器报错
-         ```
-       - go语言环境下，修复这个问题的简单办法：
-         ```go
-         var pwd string
-         func init() {
-             var err error
-             // 注意到这里是赋值语句，不是声明语句，这样全局变量就被赋值了
-             pwd, err = os.Getwd()
-             if err != nil {
-                 log.Fatalf("%v", err)
-             }
-         }
-         ```
-       - Java语言环境下，这个问题是这样的
-         ```java
-         public class student {
-             private String name;
-             public Student(String name) {
-                 // 错误
-                 name = name;
-                 // 应当是 this.name = name;
-             }
-         }
-         ```
-   - <font color='yellow'>go语言字符串长度与Java显著不同</font>
-     ```go
-     s := "hello, 世界"
-     fmt.Println(len(s)) // 13
-     fmt.Println(utf8.RuneCountInString(s)) // 9
-     // go统一使用utf8编码
-     
-     // range函数支持utf8解码
-     n := 0
-     for _, _ = range s {
-        n++
-     }
-     fmt.Println(n) // 9
-     ```
+   
    - 将一个整数值转换为字符串，值按照文字符号类型解读
      ```go
      fmt.Println(string(65)) // "A"
@@ -343,10 +283,4 @@
    //  |---- s len:12
    //  |---- hello len:5
    ```
-4. Golang执行流程
-   -  
-5. 
 
-参考资料：
-1. 解决goland无法解析git类引入的问题：https://blog.csdn.net/qq_38018994/article/details/125745076
-2. 

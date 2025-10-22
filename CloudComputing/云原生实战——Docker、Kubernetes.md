@@ -3,43 +3,29 @@
 ---
 
 ## 云平台核心
-
 1. 为什么用云平台
    - 环境统一
    - 按需付费
    - 即开即用
    - 稳定性强
    - ......
-
 2. 国内常见云平台：
-
    - [阿里云](https://promotion.aliyun.com/ntms/act/ambassador/sharetouser.html?userCode=50sid5bu&utm_source=50sid5bu)、百度云、[腾讯云](https://curl.qcloud.com/iyFTRSJb)、[华为云](https://activity.huaweicloud.com/discount_area_v5/index.html?fromacct=d1a6f32e-d6d0-4702-9213-eafe022a0708&utm_source=bGVpZmVuZ3lhbmc==&utm_medium=cps&utm_campaign=201905)、青云......
    - 国外常见云平台：亚马逊 AWS、微软 Azure ...
-
 3. 公有云——购买云服务商提供的公共服务器
-
-   公有云是最常见的云计算部署类型。公有云资源（例如服务器和存储空间）由第三方云服务提供商拥有和运营，这些资源通过 Internet 提供。在公有云中，所有硬件、软件和其他支持性基础结构均为云提供商所拥有和管理。Microsoft Azure 是公有云的一个示例。
-
-   在公有云中，你与其他组织或云“租户”共享相同的硬件、存储和网络设备，并且你可以使用 Web 浏览器访问服务和管理帐户。公有云部署通常用于提供基于 Web 的电子邮件、网上办公应用、存储以及测试和开发环境。
-
+   公有云是最常见的云计算部署类型。公有云资源（例如服务器和存储空间）由第三方云服务提供商拥有和运营。在公有云中，所有硬件、软件和其他支持性基础结构均为云提供商所拥有和管理。
+   在公有云中，你与其他组织或云“租户”共享相同的硬件、存储和网络设备，并且你可以使用 Web 浏览器访问服务和管理帐户。
    - 公有云优势：
      - 成本更低：无需购买硬件或软件，仅对使用的服务付费。
      - 无需维护：维护由服务提供商提供。
      - 近乎无限制的缩放性：提供按需资源，可满足业务需求。
      - 高可靠性：具备众多服务器，确保免受故障影响。
      - 可用性： 全年的故障时间： $$365*24*3600*(1-0.999999)$$
-
-4. 私有云：自己搭建云平台，或者购买
-
-   私有云由专供一个企业或组织使用的云计算资源构成。私有云可在物理上位于组织的现场数据中心，也可由第三方服务提供商托管。但是，在私有云中，服务和基础结构始终在私有网络上进行维护，硬件和软件专供组织使用。
-
-   这样，私有云可使组织更加方便地自定义资源，从而满足特定的 IT 需求。私有云的使用对象通常为政府机构、金融机构以及其他具备业务关键性运营且希望对环境拥有更大控制权的中型到大型组织。
-
+4. 私有云：自己搭建云平台，或者购买私有云由专供一个企业或组织使用的云计算资源构成。私有云可在物理上位于组织的现场数据中心，也可由第三方服务提供商托管。但是，在私有云中，服务和基础结构始终在私有网络上进行维护，硬件和软件专供组织使用。这样，私有云可使组织更加方便地自定义资源，从而满足特定的 IT 需求。私有云的使用对象通常为政府机构、金融机构以及其他具备业务关键性运营且希望对环境拥有更大控制权的中型到大型组织。
    - 私有云优势：
      - 灵活性更强：组织可自定义云环境以满足特定业务需求。
      - 控制力更强：资源不与其他组织共享，因此能获得更高的控制力以及更高的隐私级别。
      - 可伸缩性更强：与本地基础结构相比，私有云通常具有更强的可伸缩性。
-
 5. 没有一种云计算类型适用于所有人。多种不同的云计算模型、类型和服务已得到发展，可以满足组织快速变化的技术需求。部署云计算资源有三种不同的方法：公共云、私有云和混合云。采用的部署方法取决于业务需求。
 6. 注册云平台的一些平台：
    - [阿里云](https://www.aliyun.com/daily-act/ecs/activity_selection?userCode=50sid5bu)   aliyun.com 
@@ -47,36 +33,23 @@
    - [华为云](https://activity.huaweicloud.com/discount_area_v5/index.html?fromacct=d1a6f32e-d6d0-4702-9213-eafe022a0708&utm_source=bGVpZmVuZ3lhbmc==&utm_medium=cps&utm_campaign=201905)   huaweicloud.com
    - [青云](https://www.qingcloud.com/promotion2021)       qingcloud.com
    - [百度云](http://cloud.baidu.com/)    cloud.baidu.com
-
-7. 基础概念 
-
+7. 基础概念
    - 云服务器作为应用的最终载体
    - VPC（私有网络，专有网络）为所有云服务器提供网络隔离
    - 所有云服务器都是绑定某个私有网络
    - 安全组控制每个服务器的防火墙规则
    - 公网IP使得资源可访问
    - 端口转发的方式访问到具体服务器
-
 8. VPC：私有网络，专有网络
-
    - 网络内部之间可以互相访问，例如配置了第一组VPC，包含A、B、C三台服务器；第二组VPC，包含D、E、F三台服务器，ABC之间可以互相访问，但是DEF之间是不可以的。
-
 9. 安全组的概念
-
    - 原来Linux中防火墙的概念现在被抽象为安全组的概念，目前在相关的云平台配置相关的端口放开，来实现控制访问。
-
    - 案例：https://console.qingcloud.com/pek3/security_groups/security_groups/sg-bneesfk7/
-
      ![安全组](fig/安全组.png)
-
-     
-
 
 
 ## Docker基础
-
 ### Docker基本概念
-
 1. 解决的问题 
    - 统一标准
      - 应用构建
@@ -97,101 +70,82 @@
      - 用户、用户组隔离限制
 2. 架构 
 
-![img](fig/k8s6.svg)
-
-- Docker_Host：
-  - 安装Docker的主机
-- Docker Daemon：
-  - 运行在Docker主机上的Docker后台进程
-- Client：
-  - 操作Docker主机的客户端（命令行、UI等）
-- Registry：
-  - 镜像仓库
-  - Docker Hub
-- Images：
-  - 镜像，带环境打包好的程序，可以直接启动运行
-- Containers：
-  - 容器，由镜像启动起来正在运行中的程序
-
-> 装好Docker，然后去 软件市场 寻找镜像，下载并运行，查看容器状态日志等排错
-
+   ![img](fig/k8s6.svg)
+    - Docker_Host：
+      - 安装Docker的主机
+    - Docker Daemon：
+      - 运行在Docker主机上的Docker后台进程
+    - Client：
+      - 操作Docker主机的客户端（命令行、UI等）
+    - Registry：
+      - 镜像仓库
+      - Docker Hub
+    - Images：
+      - 镜像，带环境打包好的程序，可以直接启动运行
+    - Containers：
+      - 容器，由镜像启动起来正在运行中的程序
 3. 安装
-
-- centos下安装docker【其他系统参照如下[文档](https://docs.docker.com/engine/install/centos/)】
-
-  1. 移除以前docker相关包 
-
-     ```bash
-     sudo yum remove docker \
-     docker-client \
-     docker-client-latest \
-     docker-common \
-     docker-latest \
-     docker-latest-logrotate \
-     docker-engine
-     ```
-
-  2. 配置yum源
-
-     ```bash
-     sudo yum install -y yum-utils
-     sudo yum-config-manager \
-     --add-repo \
-     http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
-     ```
-
-  3. 安装Docker
-
-     ```bash
-     sudo yum install -y docker-ce docker-ce-cli containerd.io
-     #以下是在安装k8s的时候使用
-     yum install -y docker-ce-20.10.7 docker-ce-cli-20.10.7  containerd.io-1.4.6
-     ```
-
-  4. 启动
-
-     ```bash
-     systemctl enable docker --now
-     ```
-
-  5. 额外配置
-
-     ```bash
-     ## 个人使用的，与shangguigu官方不一致
-     sudo mkdir -p /etc/docker
-     sudo tee /etc/docker/daemon.json <<-'EOF'
-     {
-       "registry-mirrors": [
-                     "https://x9r52uz5.mirror.aliyuncs.com",
-                     "https://dockerhub.icu",
-                     "https://docker.chenby.cn",
-                     "https://docker.1panel.live",
-                     "https://docker.awsl9527.cn",
-                     "https://docker.anyhub.us.kg",
-                     "https://dhub.kubesre.xyz"
-             ],
-       "exec-opts": ["native.cgroupdriver=systemd"],
-       "log-driver": "json-file",
-       "log-opts": {
-         "max-size": "100m"
-       },
-       "storage-driver": "overlay2"
-     }
-     EOF
-     sudo systemctl daemon-reload
-     sudo systemctl restart docker
-     ```
+   - centos下安装docker【其他系统参照如下[文档](https://docs.docker.com/engine/install/centos/)】
+     1. 移除以前docker相关包
+        ```bash
+        sudo yum remove docker \
+        docker-client \
+        docker-client-latest \
+        docker-common \
+        docker-latest \
+        docker-latest-logrotate \
+        docker-engine
+        ```
+     2. 配置yum源
+        ```bash
+        sudo yum install -y yum-utils
+        sudo yum-config-manager \
+        --add-repo \
+        http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+        ```
+     3. 安装Docker
+        ```bash
+        sudo yum install -y docker-ce docker-ce-cli containerd.io
+        #以下是在安装k8s的时候使用
+        yum install -y docker-ce-20.10.7 docker-ce-cli-20.10.7  containerd.io-1.4.6
+        ```
+     4. 启动
+        ```bash
+        systemctl enable docker --now
+        ```
+     5. 额外配置
+        ```bash
+        ## 个人使用的，与shangguigu官方不一致
+        sudo mkdir -p /etc/docker
+        sudo tee /etc/docker/daemon.json <<-'EOF'
+        {
+          "registry-mirrors": [
+                        "https://x9r52uz5.mirror.aliyuncs.com",
+                        "https://dockerhub.icu",
+                        "https://docker.chenby.cn",
+                        "https://docker.1panel.live",
+                        "https://docker.awsl9527.cn",
+                        "https://docker.anyhub.us.kg",
+                        "https://dhub.kubesre.xyz"
+                ],
+          "exec-opts": ["native.cgroupdriver=systemd"],
+          "log-driver": "json-file",
+          "log-opts": {
+            "max-size": "100m"
+          },
+          "storage-driver": "overlay2"
+        }
+        EOF
+        sudo systemctl daemon-reload
+        sudo systemctl restart docker
+        ```
 
 ### Docker命令实战
-
 1. 常用命令
-
    ![image.png](fig/k8s7.png)
 
 2. 基础实战
-
-   - 找镜像（docker hub网址：http://hub.docker.com/）
-
+   - 找镜像（docker hub网址：http://hub.docker.com/ ）
      ```bash
      docker pull nginx  #下载最新版
      ## 镜像名:版本名（标签）
@@ -207,9 +161,7 @@
      ## 删除镜像
      docker rmi 镜像名:版本号/镜像id
      ```
-
    - 启动容器
-
      ```bash
      ## 基础命令
      docker run [OPTIONS] IMAGE [COMMAND] [ARG...]
@@ -232,18 +184,13 @@
      #应用开机自启
      docker update 容器id/名字 --restart=always
      ```
-
 3. 修改容器内容
-
    - 进容器内部修改
-
      ```bash
      # 进入容器内部的系统，修改容器内容
      docker exec -it 容器id  /bin/bash
      ```
-
    - 挂载数据到外部修改
-
      ```bash
      docker run --name=mynginx   \
      ## -d：后台启动
@@ -253,20 +200,15 @@
      nginx
      # 修改页面只需要去 主机的 /data/html
      ```
-
 4. 提交改变
-
    - 将自己修改好的镜像（也就是自己进行了私有化开发的镜像）提交
-
      ```bash
      docker commit [OPTIONS] CONTAINER [REPOSITORY[:TAG]]
      ## -a :作者
      ## -m :本次的备注
      docker commit -a "leifengyang"  -m "首页变化" 341d81f7504f guignginx:v1.0
      ```
-
    - 镜像传输（可以用Linux的SCP命令）
-
      ```bash
      # 将镜像保存成压缩包
      docker save -o abc.tar guignginx:v1.0
@@ -274,13 +216,9 @@
      # 别的机器加载这个镜像
      docker load -i abc.tar
      ```
-
 5. 推动到远程仓库
-
    - 首先需要在DockerHub上注册并创建自己的仓库，相当于在远程先开一个仓库，然后再提上传的事情
-
    - 下面是代码
-
      ```bash
      docker tag local-image:tagname new-repo:tagname
      docker push new-repo:tagname
@@ -294,9 +232,7 @@
      # 别的机器下载
      docker pull leifengyang/guignginx:v1.0
      ```
-
 6. 补充
-
    ```bash
    docker logs 容器名/id   排错
    docker exec -it 容器id /bin/bash
@@ -313,24 +249,17 @@
    ```
 
 ### Docker进阶实战
-
 1. 编写自己的java程序
-
    - 正常的代码开发
-
 2. 将应用打包成镜像
-
    - 旧有模式：
      - SpringBoot使用Maven打包成可以执行的jar包
      - 把jar包上传到服务器上
      - 服务器进行java - jar
    - Docker现有模式：
      - 所有的机器预先安装Docker，在运行时直接采用Docker加载
-
 3. 怎么打包（使用Docker file）
-
    - 在项目中编写Docker file：
-
    ```dockerfile
    ## 指定源镜像
    FROM openjdk:8-jdk-slim
@@ -340,9 +269,7 @@
    # 启动的时候直接使用app.jar
    ENTRYPOINT ["java","-jar","/app.jar"]
    ```
-
    - 在一台安装了Docker打包工具的机器上，将java代码打包成Docker镜像文件
-
    ```bash
    ## 后面的 . 不可以忽略，表示在当前目录下工作
    ## -t 表示tag 起名叫什么
@@ -350,15 +277,11 @@
    ## 当前目录aaa包括：DockerFile + app.jar
    docker build -t java-demo:v1.0 .
    ```
-
    - 启动容器
-
    ```bash
    docker run -d -p 8080:8080 --name myjava-app java-demo:v1.0 
    ```
-
    - 分享容器
-
    ```bash
    # 登录docker hub
    docker login
@@ -371,80 +294,50 @@
    # 别的机器运行
    docker run -d -p 8080:8080 --name myjava-app java-demo:v1.0 
    ```
-
 ---
 
 ## Kubernetes实战入门
-
 ### Kubernetes基础概念
-
 1. 是什么
-
-   传统的部署模式是上传jar包到一台服务器
-
-   后来出现了虚拟化技术，可以在虚拟机上部署服务，实现应用之间的隔离
-
-   再后来出现了容器化部署的方式，可以实现完全的隔离，而且变得更轻量级了。
-
-   但是如果一台机器损毁了，有没有方式能够保证服务的可用性？我们急需一个大规模容器编排系统。
+   - 传统的部署模式是上传jar包到一台服务器 
+   - 后来出现了虚拟化技术，可以在虚拟机上部署服务，实现应用之间的隔离 
+   - 再后来出现了容器化部署的方式，可以实现完全的隔离，而且变得更轻量级了。 
+   - 但是如果一台机器损毁了，有没有方式能够保证服务的可用性？我们急需一个大规模容器编排系统。
 
    ![传统部署模式](fig/k8s1.png)
-
    - kubernetes具有以下特性：
-
      - **服务发现和负载均衡**
        Kubernetes 可以使用 DNS 名称或自己的 IP 地址公开容器，如果进入容器的流量很大， Kubernetes 可以负载均衡并分配网络流量，从而使部署稳定。
-
      - **存储编排**
        Kubernetes 允许你自动挂载你选择的存储系统，例如本地存储、公共云提供商等。
-
      - **自动部署和回滚**
        你可以使用 Kubernetes 描述已部署容器的所需状态，它可以以受控的速率将实际状态 更改为期望状态。例如，你可以自动化 Kubernetes 来为你的部署创建新容器， 删除现有容器并将它们的所有资源用于新容器。
-
      - **自动完成装箱计算**
        Kubernetes 允许你指定每个容器所需 CPU 和内存（RAM）。 当容器指定了资源请求时，Kubernetes 可以做出更好的决策来管理容器的资源。
-
      - **自我修复**
        Kubernetes 重新启动失败的容器、替换容器、杀死不响应用户定义的 运行状况检查的容器，并且在准备好服务之前不将其通告给客户端。
-
      - **密钥与配置管理**
        Kubernetes 允许你存储和管理敏感信息，例如密码、OAuth 令牌和 ssh 密钥。 你可以在不重建容器镜像的情况下部署和更新密钥和应用程序配置，也无需在堆栈配置中暴露密钥。
-
    - Kubernetes为你提供了一个可弹性运行分布式系统的框架。 Kubernetes 会满足你的扩展要求、故障转移、部署模式等。 例如，Kubernetes可以轻松管理系统的Canary部署（金丝雀部署）。
 
 2. 架构
-
    - 工作方式
-
      K8S集群 = N个主节点 + M个工作节点，N, M>= 1
-
    - 组件架构角色
-
+   
      ![架构](fig/k8s2.png)
-
      Node：工作节点
-
      Control Plane：控制面板，理解为总部
-
      Controller Manager：决策者
-
      API server：接口，秘书
-
      etcd：资料库
-
      kubelet：工作节点的对接人
-
      k-proxy：门卫，负责管理单机下面的服务，而且与其他节点的门卫之间互相同步
-
      Scheduler：调度者
-
    - 基本的流程
-
+   
      ![](fig/k8s3.png)
-
-     秘书部（API）是所有角色之间访问的对接人。
-
-     worker节点和master节点之间的相互交互，依赖秘书部。
+     - 秘书部（API）是所有角色之间访问的对接人：worker节点和master节点之间的相互交互，依赖秘书部。
 
      > 举例说明K8S的工作流程
      >
@@ -1128,7 +1021,6 @@
       - 测试一下：使用下面的yaml文件
 
         ```bash
-        ## yaml文件怎么使用来着？
         vi test.yaml
         ## 粘贴
         kubectl apply -f test.yaml

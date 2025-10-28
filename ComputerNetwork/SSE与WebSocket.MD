@@ -16,7 +16,10 @@
 1. 客户端请求服务器，HTTP Request本身是有response的，只是在这个响应中包含了`event-stream`类型，表示将开启SSE进行后续的信息推送
    
    ![图片](./fig/sse.png)
-2. Java的SSE实现
+2. Java的SSE实现，代码实现可以参考`Technical_Code/src/main/java/com/lxm/technical_code/SSE/SSEController.java`
+   - 【注意1】：必须使用异步来实现
+   - 【注意2】：
+3. 
 
 参考文档：
 1. https://www.cnblogs.com/ai888/p/18653890

@@ -17,59 +17,61 @@ import java.util.concurrent.CompletableFuture;
 @ResponseBody
 public class SSEController {
 
-//    // MediaType.TEXT_EVENT_STREAM_VALUE 用于表示sse推送返回结果
-//    @GetMapping(value = "/chat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-//    public SseEmitter Chat() throws Exception {
-//        SseEmitter emitter = new SseEmitter(0L);
-//
-//        CompletableFuture.runAsync(() -> {
-//            try {
-//                for (int i = 0; i < 10; i++) {
-//                    Date date = new Date();
-//                    Calendar calendar = Calendar.getInstance();
-//                    calendar.setTime(date);
-//                    int hour = calendar.get(Calendar.HOUR_OF_DAY); // 获取当前小时
-//                    int minute = calendar.get(Calendar.MINUTE); // 获取当前分钟
-//                    int second = calendar.get(Calendar.SECOND); // 获取当前秒钟
-//                    String time = "当前时间：" + hour + ":" + minute + ":" + second;
-//                    SseEmitter.SseEventBuilder event = SseEmitter.event();
-//                    event.data(time);
-//                    emitter.send(event);
-//                    Thread.sleep(1000);
-//                }
-//            } catch (Exception e) {
-//                // 异常退出
-//                emitter.completeWithError(e);
-//            } finally {
-//                emitter.complete();
-//            }
-//        });
-//        // 设置回调
-//        emitter.onCompletion(() -> System.out.println("SSE连接完成"));
-//        emitter.onTimeout(() -> System.out.println("SSE连接超时"));
-//        emitter.onError((ex) -> System.out.println("SSE连接错误: " + ex.getMessage()));
-//        return emitter;
-//    }
-
-    @GetMapping(value = "/chat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    // @GetMapping(value = "/chat", MediaType.TEXT_EVENT_STREAM_VALUE) 用于表示以流返回结果
+    // 当返回的对象是SseEmitter时，不必添加这个字段
+    @GetMapping(value = "/chat")
     public SseEmitter Chat() throws Exception {
-        SseEmitter emitter = new SseEmitter();
+        SseEmitter emitter = new SseEmitter(0L);
 
-        for (int i = 0; i < 10; i++) {
-            Date date = new Date();
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(date);
-            int hour = calendar.get(Calendar.HOUR_OF_DAY); // 获取当前小时
-            int minute = calendar.get(Calendar.MINUTE); // 获取当前分钟
-            int second = calendar.get(Calendar.SECOND); // 获取当前秒钟
-            String time = "当前时间：" + hour + ":" + minute + ":" + second;
-            SseEmitter.SseEventBuilder event = SseEmitter.event();
-            event.data(time);
-            emitter.send(event);
-            Thread.sleep(1000);
-        }
-        emitter.onTimeout(emitter::complete);
+        CompletableFuture.runAsync(() -> {
+            try {
+                for (int i = 0; i < 10; i++) {
+                    Date date = new Date();
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(date);
+                    int hour = calendar.get(Calendar.HOUR_OF_DAY); // 获取当前小时
+                    int minute = calendar.get(Calendar.MINUTE); // 获取当前分钟
+                    int second = calendar.get(Calendar.SECOND); // 获取当前秒钟
+                    String time = "当前时间：" + hour + ":" + minute + ":" + second;
+                    SseEmitter.SseEventBuilder event = SseEmitter.event();
+                    event.data(time);
+                    emitter.send(event);
+                    Thread.sleep(1000);
+                }
+            } catch (Exception e) {
+                // 异常退出
+                emitter.completeWithError(e);
+            } finally {
+                emitter.complete();
+            }
+        });
+        // 设置回调
+        emitter.onCompletion(() -> System.out.println("SSE连接完成"));
+        emitter.onTimeout(() -> System.out.println("SSE连接超时"));
+        emitter.onError((ex) -> System.out.println("SSE连接错误: " + ex.getMessage()));
         return emitter;
     }
+
+//    // 错误写法，没有立即返回
+//    @GetMapping(value = "/chat", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+//    public SseEmitter Chat() throws Exception {
+//        SseEmitter emitter = new SseEmitter();
+//
+//        for (int i = 0; i < 10; i++) {
+//            Date date = new Date();
+//            Calendar calendar = Calendar.getInstance();
+//            calendar.setTime(date);
+//            int hour = calendar.get(Calendar.HOUR_OF_DAY); // 获取当前小时
+//            int minute = calendar.get(Calendar.MINUTE); // 获取当前分钟
+//            int second = calendar.get(Calendar.SECOND); // 获取当前秒钟
+//            String time = "当前时间：" + hour + ":" + minute + ":" + second;
+//            SseEmitter.SseEventBuilder event = SseEmitter.event();
+//            event.data(time);
+//            emitter.send(event);
+//            Thread.sleep(1000);
+//        }
+//        emitter.onTimeout(emitter::complete);
+//        return emitter;
+//    }
 
 }

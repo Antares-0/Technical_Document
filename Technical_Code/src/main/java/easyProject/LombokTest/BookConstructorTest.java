@@ -1,4 +1,4 @@
-package com.lxm.technical_code.LombokTest;
+package easyProject.LombokTest;
 
 public class BookConstructorTest {
     public static void main(String[] args) {

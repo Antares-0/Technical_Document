@@ -1,4 +1,4 @@
-package com.lxm.technical_code.LombokTest;
+package easyProject.LombokTest;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

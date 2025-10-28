@@ -1,4 +1,4 @@
-package com.lxm.technical_code.MultiThread;
+package easyProject.MultiThread;
 
 import java.util.concurrent.*;
 

@@ -1,4 +1,4 @@
-package com.lxm.technical_code.MDC;
+package easyProject.MDC;
 
 
 import org.slf4j.Logger;

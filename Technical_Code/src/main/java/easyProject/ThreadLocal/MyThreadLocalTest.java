@@ -1,4 +1,4 @@
-package com.lxm.technical_code.ThreadLocal;
+package easyProject.ThreadLocal;
 
 public class MyThreadLocalTest {
     public static void main(String[] args) {

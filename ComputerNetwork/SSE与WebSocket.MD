@@ -12,15 +12,34 @@
    - WebSocket：WebSocket则更适用于那些需要客户端和服务器之间进行实时双向通信的场景，如聊天室、在线游戏等。其支持双向通信、实时性高且可以实现更丰富的交互效果是其主要优点。但相应地，它也需要独立的TCP连接，这可能会增加一定的网络开销和对服务器的压力。同时，虽然现代浏览器都已经支持WebSocket协议，但在某些特定环境下可能仍存在兼容性问题。
    - 综上所述，SSE和WebSocket在通信方式、协议与连接以及适用场景与优缺点等方面都存在明显的区别。在选择使用哪种技术时，应根据具体需求和场景来进行权衡和选择。
 
-## 二、SSE的具体细节
+## 二、从HTTP角度，探究SSE的具体细节
 1. 客户端请求服务器，HTTP Request本身是有response的，只是在这个响应中包含了`event-stream`类型，表示将开启SSE进行后续的信息推送
    
    ![图片](./fig/sse.png)
-2. Java的SSE实现，代码实现可以参考`Technical_Code/src/main/java/com/lxm/technical_code/SSE/SSEController.java`
-   - 【注意1】：必须使用异步来实现
-   - 【注意2】：
+2. 
+
+## 三、Java的SSE实现
+1. Java的SSE实现，代码实现可以参考`Technical_Code/src/main/java/com/lxm/technical_code/SSE/SSEController.java`
+2. SseEmitter接口说明
+   - 构造方法
+     - SseEmitter()：构造方法，用于创建一个新的 SseEmitter 对象。
+     - SseEmitter(Long timeout)：构造方法，用于创建一个设置了超时时间新的 SseEmitter 对象。
+   - 发送方法
+     - send(Object data)：向客户端发送消息，支持字符串、JSON 等
+     - send(Object data, MediaType mediaType)：指定 MIME 类型发送
+     - complete()：正常关闭连接
+     - completeWithError(Throwable ex)：异常关闭连接
+   - 回调方法
+     - onTimeout(Runnable callback)：设置超时回调
+     - onError(Consumer<Throwable> callback)：设置错误回调
+     - onCompletion(Runnable callback)：设置连接关闭的回调
+3. 为什么要通过异步实现？
+   - 如果是同步单线程实现的，emitter的send方法会将数据写在缓冲区
 3. 
+
 
 参考文档：
 1. https://www.cnblogs.com/ai888/p/18653890
 2. 手动实现sse：https://www.cnblogs.com/yihuihui/p/12622729.html
+3. Java的SseEmitter接口说明：https://www.jb51.net/program/3243510z6.htm
+4. 

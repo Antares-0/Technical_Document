@@ -1,0 +1,182 @@
+## 请求流式接口的request
+
+Frame 1150: Packet, 892 bytes on wire (7136 bits), 892 bytes captured (7136 bits) on interface lo0, id 0
+Null/Loopback
+    Family: IPv6 (30)
+Internet Protocol Version 6, Src: ::1, Dst: ::1
+    0110 .... = Version: 6
+    .... 0000 0000 .... .... .... .... .... = Traffic Class: 0x00 (DSCP: CS0, ECN: Not-ECT)
+        .... 0000 00.. .... .... .... .... .... = Differentiated Services Codepoint: Default (0)
+        .... .... ..00 .... .... .... .... .... = Explicit Congestion Notification: Not ECN-Capable Transport (0)
+    .... 1000 0000 1000 0000 0000 = Flow Label: 0x80800
+    Payload Length: 848
+    Next Header: TCP (6)
+    Hop Limit: 64
+    Source Address: ::1
+        [Address Space: Reserved by IETF]
+        [Special-Purpose Allocation: Loopback Address]
+    Destination Address: ::1
+        [Address Space: Reserved by IETF]
+        [Special-Purpose Allocation: Loopback Address]
+    [Stream index: 3]
+Transmission Control Protocol, Src Port: 52380, Dst Port: 8080, Seq: 1, Ack: 1, Len: 816
+    Source Port: 52380
+    Destination Port: 8080
+    [Stream index: 402]
+    [Stream Packet Number: 5]
+    [Conversation completeness: Complete, WITH_DATA (31)]
+        ..0. .... = RST: Absent
+        ...1 .... = FIN: Present
+        .... 1... = Data: Present
+        .... .1.. = ACK: Present
+        .... ..1. = SYN-ACK: Present
+        .... ...1 = SYN: Present
+        [Completeness Flags: ·FDASS]
+    [TCP Segment Len: 816]
+    Sequence Number: 1    (relative sequence number)
+    Sequence Number (raw): 4075467760
+    [Next Sequence Number: 817    (relative sequence number)]
+    Acknowledgment Number: 1    (relative ack number)
+    Acknowledgment number (raw): 1686748137
+    1000 .... = Header Length: 32 bytes (8)
+    Flags: 0x018 (PSH, ACK)
+    Window: 6371
+    [Calculated window size: 407744]
+    [Window size scaling factor: 64]
+    Checksum: 0x0358 [unverified]
+    [Checksum Status: Unverified]
+    Urgent Pointer: 0
+    Options: (12 bytes), No-Operation (NOP), No-Operation (NOP), Timestamps
+        TCP Option - No-Operation (NOP)
+        TCP Option - No-Operation (NOP)
+        TCP Option - Timestamps: TSval 1764695561, TSecr 3547346981
+            Kind: Time Stamp Option (8)
+            Length: 10
+            Timestamp value: 1764695561
+            Timestamp echo reply: 3547346981
+    [Timestamps]
+        [Time since first frame in this TCP stream: 223.000 microseconds]
+        [Time since previous frame in this TCP stream: 109.000 microseconds]
+    [SEQ/ACK analysis]
+        [iRTT: 104.000 microseconds]
+        [Bytes in flight: 816]
+        [Bytes sent since last PSH flag: 816]
+    [Client Contiguous Streams: 1]
+    [Server Contiguous Streams: 1]
+    TCP payload (816 bytes)
+Hypertext Transfer Protocol
+    GET /sse/chat HTTP/1.1\r\n
+        Request Method: GET
+        Request URI: /sse/chat
+        Request Version: HTTP/1.1
+    Host: localhost:8080\r\n
+    Connection: keep-alive\r\n
+    Cache-Control: max-age=0\r\n
+    sec-ch-ua: "Chromium";v="140", "Not=A?Brand";v="24", "Google Chrome";v="140"\r\n
+    sec-ch-ua-mobile: ?0\r\n
+    sec-ch-ua-platform: "macOS"\r\n
+    Upgrade-Insecure-Requests: 1\r\n
+    User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36\r\n
+    Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7\r\n
+    Sec-Fetch-Site: none\r\n
+    Sec-Fetch-Mode: navigate\r\n
+    Sec-Fetch-User: ?1\r\n
+    Sec-Fetch-Dest: document\r\n
+    Accept-Encoding: gzip, deflate, br, zstd\r\n
+    Accept-Language: zh-CN,zh;q=0.9\r\n
+    Cookie: Idea-3be796e8=3b7efd1e-be06-4d9e-9036-dfe4805ca391; Goland-ecf6d56e=6f7e241b-d667-403b-ab17-17c1806c9d4e\r\n
+    \r\n
+    [Response in frame: 1318]
+    [Full request URI: http://localhost:8080/sse/chat]
+
+
+## 请求非流式接口的request
+
+Frame 2194: Packet, 892 bytes on wire (7136 bits), 892 bytes captured (7136 bits) on interface lo0, id 0
+Null/Loopback
+    Family: IPv6 (30)
+Internet Protocol Version 6, Src: ::1, Dst: ::1
+    0110 .... = Version: 6
+    .... 0000 0000 .... .... .... .... .... = Traffic Class: 0x00 (DSCP: CS0, ECN: Not-ECT)
+        .... 0000 00.. .... .... .... .... .... = Differentiated Services Codepoint: Default (0)
+        .... .... ..00 .... .... .... .... .... = Explicit Congestion Notification: Not ECN-Capable Transport (0)
+    .... 1010 0000 0000 0000 0000 = Flow Label: 0xa0000
+    Payload Length: 848
+    Next Header: TCP (6)
+    Hop Limit: 64
+    Source Address: ::1
+        [Address Space: Reserved by IETF]
+        [Special-Purpose Allocation: Loopback Address]
+    Destination Address: ::1
+        [Address Space: Reserved by IETF]
+        [Special-Purpose Allocation: Loopback Address]
+    [Stream index: 3]
+Transmission Control Protocol, Src Port: 52612, Dst Port: 8080, Seq: 1, Ack: 1, Len: 816
+    Source Port: 52612
+    Destination Port: 8080
+    [Stream index: 612]
+    [Stream Packet Number: 5]
+    [Conversation completeness: Complete, WITH_DATA (31)]
+        ..0. .... = RST: Absent
+        ...1 .... = FIN: Present
+        .... 1... = Data: Present
+        .... .1.. = ACK: Present
+        .... ..1. = SYN-ACK: Present
+        .... ...1 = SYN: Present
+        [Completeness Flags: ·FDASS]
+    [TCP Segment Len: 816]
+    Sequence Number: 1    (relative sequence number)
+    Sequence Number (raw): 384819013
+    [Next Sequence Number: 817    (relative sequence number)]
+    Acknowledgment Number: 1    (relative ack number)
+    Acknowledgment number (raw): 3647284068
+    1000 .... = Header Length: 32 bytes (8)
+    Flags: 0x018 (PSH, ACK)
+    Window: 6371
+    [Calculated window size: 407744]
+    [Window size scaling factor: 64]
+    Checksum: 0x0358 [unverified]
+    [Checksum Status: Unverified]
+    Urgent Pointer: 0
+    Options: (12 bytes), No-Operation (NOP), No-Operation (NOP), Timestamps
+        TCP Option - No-Operation (NOP)
+        TCP Option - No-Operation (NOP)
+        TCP Option - Timestamps: TSval 85288368, TSecr 2026894462
+            Kind: Time Stamp Option (8)
+            Length: 10
+            Timestamp value: 85288368
+            Timestamp echo reply: 2026894462
+    [Timestamps]
+        [Time since first frame in this TCP stream: 188.000 microseconds]
+        [Time since previous frame in this TCP stream: 132.000 microseconds]
+    [SEQ/ACK analysis]
+        [iRTT: 51.000 microseconds]
+        [Bytes in flight: 816]
+        [Bytes sent since last PSH flag: 816]
+    [Client Contiguous Streams: 1]
+    [Server Contiguous Streams: 1]
+    TCP payload (816 bytes)
+Hypertext Transfer Protocol
+    GET /sse/chat HTTP/1.1\r\n
+        Request Method: GET
+        Request URI: /sse/chat
+        Request Version: HTTP/1.1
+    Host: localhost:8080\r\n
+    Connection: keep-alive\r\n
+    Cache-Control: max-age=0\r\n
+    sec-ch-ua: "Chromium";v="140", "Not=A?Brand";v="24", "Google Chrome";v="140"\r\n
+    sec-ch-ua-mobile: ?0\r\n
+    sec-ch-ua-platform: "macOS"\r\n
+    Upgrade-Insecure-Requests: 1\r\n
+    User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/140.0.0.0 Safari/537.36\r\n
+    Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7\r\n
+    Sec-Fetch-Site: none\r\n
+    Sec-Fetch-Mode: navigate\r\n
+    Sec-Fetch-User: ?1\r\n
+    Sec-Fetch-Dest: document\r\n
+    Accept-Encoding: gzip, deflate, br, zstd\r\n
+    Accept-Language: zh-CN,zh;q=0.9\r\n
+    Cookie: Idea-3be796e8=3b7efd1e-be06-4d9e-9036-dfe4805ca391; Goland-ecf6d56e=6f7e241b-d667-403b-ab17-17c1806c9d4e\r\n
+    \r\n
+    [Response in frame: 2196]
+    [Full request URI: http://localhost:8080/sse/chat]

@@ -23,7 +23,7 @@ public class SSEController {
         // 开启异步线程进行处理
         CompletableFuture.runAsync(() -> {
             try {
-                for (int i = 0; i < 10; i++) {
+                for (int i = 0; i < 2; i++) {
                     Date date = new Date();
                     Calendar calendar = Calendar.getInstance();
                     calendar.setTime(date);
@@ -70,7 +70,7 @@ public class SSEController {
             Thread.sleep(1000);
         }
         emitter.onTimeout(emitter::complete);
-        // 应当直接返回，然后
+        // 应当直接返回
         return emitter;
     }
     **/

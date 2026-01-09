@@ -1,7 +1,7 @@
 # JAIN-SIP SIP开发的java框架
 
 ## 一、JAIN-SIP是什么
-
+JAIN—SIP是智能外呼中常用于Java框架的一款开发包，方便Java程序员实现SIP协议，实现用户外呼
 
 
 ## 二、JAIN-SIP的使用

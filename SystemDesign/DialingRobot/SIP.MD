@@ -111,8 +111,8 @@
 4. Registration/Location Server，注册和定位服务器，用于登记和定位UA，在线的UA会定时的向注册服务器发送SIP消息来表明UA当前的位置，Registration服务器会将该信息存入数据库中，当其他UA向该UA发送request时就能获得该UA的位置。
 5. Redirect Server，用于重定向，在逻辑上相当于一个特殊的UA。
 6. 架构图  
-   ![SIP协议架构1](./fig/SIP.png)  
-   ![SIP协议框架2](./fig/SIP2.png)  
+   ![SIP协议架构1](fig/SIP.png)  
+   ![SIP协议框架2](fig/SIP2.png)  
 
 # 四、SIP协议概念
 1. SIP协议有三个需要重点理解的概念，事务（Transaction），会话（Session），对话（Dialog）。
@@ -139,7 +139,7 @@
       UAS 收到 ACK 请求后，开始发送 RTP 数据包（实时传输协议，用于传输音频和视频数据），表示 VoIP 会话已经建立。
       在会话过程中，UAS 可能会发送一些状态信息给 UAC，例如 180 Ringing 响应，表示正在振铃；或者 183 Session Progress 响应，表示会话处理中，代表处理有关未分类的呼叫处理的信息
       ```
-      ![SIP建立通话](./fig/createSipConnect.png)
+      ![SIP建立通话](fig/createSipConnect.png)
    - 线上案例（一次正常的通话过程）
    
       | 主叫(UA)活动                   | Proxy Server活动                   | 被叫(UA)活动                     |
@@ -172,7 +172,7 @@
       | 主叫已经挂断                     |                                  |                              |
       |                            |                                  | 收到Proxy Server的BYE信令，挂断并返回OK |
       |                            | 通话结束                             |                              |
-      ![SIP正常交互实例](./fig/SIPNormal.png)
+      ![SIP正常交互实例](fig/SIPNormal.png)
 2. 结束通话的交互流程
    UAC（User Agent Client）或者 UAS（User Agent Server）决定结束通话。
    ```text
@@ -186,12 +186,12 @@
    ```text
    在完整的SIP系统中，所有的SIP终端作为User Agent都应该向注册服务器登记注册，以告知其位置、会话能力、呼叫策略等信息。通常，SIP终端开机启动或者配置管理员执行注册操作时，就向注册服务器发送注册请求消息（REGISTER），该消息中携带了所有需要登记的信息。注册服务器收到注册请求消息后向终端发送回应消息，以告知其请求消息已收到。如果注册成功，就再向终端发送“200 OK”消息。
    ```
-   ![注册流程](./fig/Reg.png)
+   ![注册流程](fig/Reg.png)
 4. 重定向呼叫
    ```text
    SIP重定向服务器收到会话请求消息后，不是转发会话请求消息，而是在回应消息中告知被叫SIP终端的地址。主叫终端从而重新直接向被叫终端发送会话请求消息。被叫终端也将直接向主叫终端发送应答消息。
    ```
-   ![重定向呼叫](./fig/redir.png)
+   ![重定向呼叫](fig/redir.png)
    
 # 六、Java中sip开发框架
 1. 来自[stackoverflow](https://stackoverflow.com/questions/498043/what-is-the-currently-popular-java-sip-library)

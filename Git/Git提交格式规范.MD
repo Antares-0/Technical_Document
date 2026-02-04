@@ -22,7 +22,7 @@
 5. description字段的可选值：简单说明修改的内容
 6. body字段：进一步说明修改的具体内容是什么
 7. footer字段：脚注
-8. 示例：`feat(登陆相关): 实现登陆校验` 或 `fix(类型转换): 解决NPE`
+8. 示例：`feat(登陆相关):实现登陆校验` 或 `fix(类型转换):解决NPE`
 
 ## 二、Idea工具
 可以使用Git Commit Template插件方便快速生成git信息

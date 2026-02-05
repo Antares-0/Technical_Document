@@ -1,4 +1,4 @@
-# Langchain应用开发学习
+# 大模型应用之Langchain
 
 Langchain是一个用于将大模型快速部署对外提供服务的工具
 
@@ -11,7 +11,7 @@ Langchain是一个用于将大模型快速部署对外提供服务的工具
 4. LangChain基本架构
    - 基本架构
    
-   ![LangChain架构](../fig/langChainArc.svg)
+   ![LangChain架构](../../fig/langChainArc.svg)
    - LangSmith：用于观测，相当于监控工具
    - LangServe：将LangChain的功能封装成Rest风格的请求
    - Templates：LangChain官方提供的一些AI任务模板

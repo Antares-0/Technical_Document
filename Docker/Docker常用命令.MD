@@ -20,7 +20,8 @@
    ```
 
 ## 二、Docker-compose命令
-1. 安装Docker-compose：注意docker-compose与docker要有对应的版本
+1. Docker-compose命令，相当于一次性打包部署多个docker镜像，所有的配置从yaml文件中读取即可
+2. 安装Docker-compose：注意docker-compose与docker要有对应的版本
    ```bash
    # 安装docker
    sudo dnf install docker-ce-24.0.6 docker-ce-cli-24.0.6 containerd.io
@@ -30,15 +31,15 @@
    docker compose version
    docker --verison
    ```
-2. 创建docker-compose.yaml文档
-3. 运行：
+3. 创建docker-compose.yaml文档
+4. 运行：
    ```bash
    # 添加权限
    sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
    # 执行命令 (-d 在后台运行)
    docker-compose up -d
    ```
-4. docker-compose服务管理
+5. docker-compose服务管理
    - 查看运行中的容器和服务
      ```bash
      docker-compose ps

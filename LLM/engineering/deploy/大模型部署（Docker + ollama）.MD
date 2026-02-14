@@ -81,13 +81,10 @@
 
     | graphics card | VRAM |
     |:-------------:|:----:|
-    |     A30       | 24G  |
-4. 
+    |      A30      | 24G  |
 
 
 
 参考资料
 1. ollama官方网址：https://docs.ollama.com/
 2. ollama介绍：https://blog.csdn.net/bluesocks152/article/details/145683901
-3. 
-4. 

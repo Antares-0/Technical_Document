@@ -8,7 +8,7 @@ from common.functions import sigmoid, softmax   # 激活函数
 # 读取数据
 def get_data():
     # 1. 从文件加载数据集
-    data = pd.read_csv("../../ML/code&data/train.csv")
+    data = pd.read_csv("../../../ML/code&data/train.csv")
     # 2. 划分数据集
     X = data.drop("label", axis=1)
     y = data["label"]

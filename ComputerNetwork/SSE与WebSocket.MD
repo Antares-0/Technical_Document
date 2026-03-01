@@ -47,21 +47,30 @@
 2. wireShark抓包案例：
 
    ![抓包案例](./fig/wiresharksse.png)
-3. case说明：
-   - No.81-No.83：三次握手过程
-   - No.84：TCP Window Update（参考文档[4]）
-   - No.85：建立连接后，发起HTTP请求
-   - No.86：服务器下发ACK，表明接收到请求
-   - No.87：<font color='yellow'>服务器下发PSH，标识推送数据，在这个帧中，下发了关键的`event-stream`表明是流式的</font>
-   - No.88-No.92、No.95-No.100：流式数据下发中
-   - No.103：HTTP下发请求结束，代表流式下发完毕
-   - No.104：收到结束请求
-   - No.266-No.269：四次挥手过程
+3. case 说明：
+   - No.9-No.14：两条连接的三次握手过程，建立连接【<font color="red">为什么存在两个链接？</font>】
+   - No.15-No.16：TCP Window Update（参考文档[4]）
+   - No.17：建立连接后，发起HTTP请求
+   - No.18：服务器下发ACK，表明接收到请求
+   - No.19：<font color='yellow'>关键一步，服务器下发带有`event-stream`的标志标明这是一个流式响应</font>
+   - No.20-No.32：流式数据下发中
+   - No.37-No.38：数据下发完毕
+   - No.133-No.134、No.141-No.142：保活请求
+   - No.173-No.174、No.181-No.182、No.267-No.270：四次挥手关闭连接
 4. case来源
    - 后端实现：`Technical_Code/src/main/java/com/lxm/technical_code/SSE/SSEController.java`
    - curl命令：`curl --location '127.0.0.1:8080/sse/chat'`
-
-
+   - wireshark抓包保存文件：`ComputerNetwork/prof/SSE.pcapng`
+5. <font color="red">为什么存在两个链接？</font>
+   - 应用层的并行化设计
+     很多现代应用（尤其是 Web 应用）会主动建立多个 TCP 连接到同一个服务器，以实现：
+     - 并行请求：同时发送多个请求，提升整体响应速度。
+     - 功能分离：不同的功能模块使用不同的连接。例如，一个连接用于实时消息推送，另一个连接用于普通的 API 调用或文件下载，避免数据流互相干扰。
+   - 浏览器或客户端的默认行为
+     浏览器通常会对同一个域名维护一个连接池，默认允许同时建立 6-8 个连接，以并行加载图片、脚本、样式表等资源。
+   - 负载均衡或高可用策略
+     某些客户端库或框架会自动建立多条连接到服务器，以实现负载均衡或在一条连接断开时，另一条连接可以无缝接管，提高服务的可用性。
+  
 
 
 

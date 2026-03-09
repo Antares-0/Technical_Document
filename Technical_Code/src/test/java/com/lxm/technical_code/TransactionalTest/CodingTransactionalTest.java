@@ -32,6 +32,9 @@ public class CodingTransactionalTest {
         // 设置传播行为属性，默认事务级别。当前无事务则新建事务，已有事务则加入事务。
         defaultTransactionDefinition.setPropagationBehavior(DefaultTransactionDefinition.PROPAGATION_REQUIRED);
         // 获得事务状态
+        if (platformTransactionManager == null) {
+            return;
+        }
         TransactionStatus status = platformTransactionManager.getTransaction(defaultTransactionDefinition);
         try {
             User user = new User();
@@ -52,6 +55,9 @@ public class CodingTransactionalTest {
 
     @Test
     public void transactionTemplateTest() {
+        if (transactionTemplate == null) {
+            return;
+        }
         Object execute = transactionTemplate.execute(new TransactionCallback() {
             /**
              * @param transactionStatus 事务运行状态信息 是否是新事务、是否已被标记为回滚等

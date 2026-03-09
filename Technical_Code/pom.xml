@@ -23,7 +23,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-tx</artifactId>
-            <version>5.3.10</version> <!-- 请使用适合您项目的版本号 -->
+            <version>5.3.10</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -35,17 +35,12 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <version>3.2.10</version>
         </dependency>
-
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <version>5.5.2</version>
             <scope>test</scope>
         </dependency>
-
-        <!--SpringBoot开启事务组件-->
-
-
         <!--SIP开发引入-->
         <dependency>
             <groupId>javax.sip</groupId>

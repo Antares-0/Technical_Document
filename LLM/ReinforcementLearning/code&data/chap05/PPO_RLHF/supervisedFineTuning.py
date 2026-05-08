@@ -1,6 +1,9 @@
-from transformers import AutoModelForCausalLM, AutoTokenizer, TrainingArguments, Trainer, DataCollatorForLanguageModeling
 import torch
 from datasets import load_dataset
+from torch.optim import AdamW
+from torch.utils.data import DataLoader
+from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import DataCollatorForLanguageModeling
 
 model_name = "gpt2"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
@@ -14,97 +17,88 @@ ds_train, ds_test = ds['train'], ds['validation']
 tokenizer.pad_token = tokenizer.eos_token  # gpt2 没有pad，用eos代替
 model.config.pad_token_id = model.config.eos_token_id
 
+num_epochs = 1
+
 
 # ====================== 新增：数据预处理函数 ======================
 def preprocess_function(examples):
-    # 构造指令格式（让因果LM做情感分类）
-    texts = [
-        f"Sentence: {sentence}\nSentiment: {'positive' if label == 1 else 'negative'}"
-        for sentence, label in zip(examples['sentence'], examples['label'])
-    ]
+    return tokenizer(examples['sentence'])
 
-    # 分词
-    tokenized = tokenizer(
-        texts,
-        truncation=True,
-        max_length=128,
-        padding="max_length",
-        return_tensors="pt"
-    )
 
-    # 标签 = 输入_ids（语言模型自监督训练）
-    tokenized["labels"] = tokenized["input_ids"].clone()
-    return tokenized
-
+map_kwargs = {
+    'batched': True,
+    'batch_size': 512,
+    'remove_columns': ['idx', 'sentence', 'label']
+}
 
 # 对训练集 / 测试集批量预处理
-tokenized_train = ds_train.map(preprocess_function, batched=True)
-tokenized_test = ds_test.map(preprocess_function, batched=True)
+tokenized_dataset_train = ds_train.map(preprocess_function, **map_kwargs)
+tokenized_dataset_val = ds_test.map(preprocess_function, **map_kwargs)
 
-# 数据收集器（自动做因果语言建模掩码）
+# 去掉少于6个token的文本
+tokenized_dataset_train = tokenized_dataset_train.filter(
+    lambda x: len(x['input_ids']) > 5)
+tokenized_dataset_val = tokenized_dataset_val.filter(
+    lambda x: len(x['input_ids']) > 5)
+
 data_collator = DataCollatorForLanguageModeling(
-    tokenizer=tokenizer,
-    mlm=False  # GPT2 是自回归，不是掩码LM
+    tokenizer,
+    mlm=False
+)
+dataloader_params = {
+    'batch_size': 16,  # 6G显存正好够用
+    'collate_fn': data_collator
+}
+train_dataloader = DataLoader(
+    tokenized_dataset_train,
+    **dataloader_params
+)
+val_dataloader = DataLoader(
+    tokenized_dataset_val,
+    **dataloader_params
 )
 
-# ====================== 新增：训练参数 ======================
-training_args = TrainingArguments(
-    output_dir="./gpt2-sst2-finetuned",
-    per_device_train_batch_size=8,
-    per_device_eval_batch_size=8,
-    learning_rate=2e-5,
-    num_train_epochs=2,
-    weight_decay=0.01,
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-    # 旧版 transformers 用这个，不是 evaluation_strategy！
-    eval_strategy="epoch",
 
-    save_strategy="epoch",
-    logging_steps=10,
-    fp16=False,  # Mac 没有 CUDA，必须关
-    push_to_hub=False,
-    report_to="none",  # 避免 wandb 报错
-)
+def validate(epoch):
+    """验证函数"""
+    model.eval()  # 禁用模型的随机性，例如dropout等特性
+    total_loss = 0.0
+    for i, batch in enumerate(val_dataloader):
+        batch = batch.to(device)
+        with torch.no_grad():
+            outputs = model(**batch)
+            loss = outputs.loss  # 损失
+            total_loss += loss.item()
+    print(f'val_loss at {epoch} epoch:', total_loss / len(val_dataloader))
 
-# ====================== 新增：Trainer 训练 ======================
-trainer = Trainer(
-    model=model,
-    args=training_args,
-    train_dataset=tokenized_train,
-    eval_dataset=tokenized_test,
-    data_collator=data_collator,
-)
 
-# 开始训练
-trainer.train()
+optimizer = AdamW(model.parameters(), lr=2e-5)
+model.to(device)
+validate(0)
+for epoch in range(num_epochs):
+    model.train()
+    for i, batch in enumerate(train_dataloader):
+        batch = batch.to(device)
+        outputs = model(**batch)
+        batch = batch.to(device)
+        outputs = model(**batch)
+        loss = outputs.loss
+        print(f'Loss: {loss.item()}')
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+    validate(epoch + 1)
 
 # ====================== 训练完成：保存模型 ======================
 model.save_pretrained("./gpt2-sst2-final")
 tokenizer.save_pretrained("./gpt2-sst2-final")
-print("训练完成！模型已保存到 ./gpt2-sst2-final")
-
 
 # ====================== 可选：推理测试 ======================
-def predict_sentiment(sentence):
-    inputs = tokenizer(
-        f"Sentence: {sentence}\nSentiment:",
-        return_tensors="pt",
-        truncation=True
-    ).to("cuda" if torch.cuda.is_available() else "cpu")
+from transformers import pipeline, set_seed
+from pprint import pprint
 
-    with torch.no_grad():
-        outputs = model.generate(
-            **inputs,
-            max_new_tokens=3,
-            do_sample=False,
-            pad_token_id=tokenizer.eos_token_id
-        )
-
-    return tokenizer.decode(outputs[0], skip_special_tokens=True)
-
-
-# 测试一句
-test_sentence = "This movie is amazing!"
-print("\n测试结果：", predict_sentiment(test_sentence))
-
-
+g = pipeline('text-generation', model='./gpt2-sst2-final')
+set_seed(42)
+pprint(g("this is a", max_length=30, num_return_sequences=1))

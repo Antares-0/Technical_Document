@@ -1,192 +1,59 @@
 # 第03章：LangChain使用之Chains
 
-讲师：尚硅谷-宋红康
 
-官网：[尚硅谷](http://www.atguigu.com/)
-
-***
-
-## 1、Chains的基本使用
-
-### 1.1 Chain的基本概念
-
-Chain：链，用于将多个组件（提示模板、LLM模型、记忆、工具等）连接起来，形成可复用的`工作流`，完成复杂的任务。
-
-**Chain 的核心思想**是通过组合不同的模块化单元，实现比单一组件更强大的功能。
-
-
-
-构建一个典型的链式服务主要**包括如下4个部分**： 
-
-- 将`LLM`与`Prompt Template`（提示模板）结合 
-- 将`LLM`与`外部数据`结合，例如用于问答
-- 将`LLM`与`长期记忆`结合，例如用于聊天历史记录
-- 通过将`第一个LLM`的输出作为`第二个LLM`的输入，将多个LLM按顺序结合在一起
-
-### 1.2 LCEL 及其基本构成
-
-使用LCEL，可以构造出结构最简单的Chain。
-
-LangChain表达式语言（LCEL，LangChain Expression Language）是一种声明式方法，可以轻松地将多个组件链接成 AI 工作流。它通过Python原生操作符（如管道符`|`）将组件连接成可执行流程，显著简化了AI应用的开发。
-
-**LCEL的基本构成：**提示（Prompt）+ 模型（Model）+ 输出解析器（OutputParser）
-
-即：
-
-```python
-chain = prompt | model | output_parser
-
-chain.invoke({"input":"What's your name?"})
-```
-
-- **Prompt**：Prompt 是一个 BasePromptTemplate，这意味着它接受一个模板变量的字典并生成一个` PromptValue`。PromptValue 可以传递给 LLM（它以字符串作为输入）或 ChatModel（它以消息序列作为输入）。
-- **Model**：将 PromptValue 传递给 model。如果我们的 model 是一个 ChatModel，这意味着它将输出一个 `BaseMessage`。
-- **OutputParser**：将 model 的输出传递给 output_parser，它是一个 BaseOutputParser，意味着它可以接受字符串或 BaseMessage 作为输入。
-- **chain**：我们可以使用   ` |  `  运算符轻松创建这个Chain。  ` |  `  运算符在 LangChain 中用于将两个元素组合在一起。  
-- **invoke**：所有LCEL对象都实现 `Runnable` 协议，保证一致的调用方式（`invoke`/`batch`/`stream`）
-
-> | 符号类似于 shell 里面管道操作符，它将不同的组件链接在一起，将前一个组件的输出作为下一个组件的输入，这就形成了一个 AI 工作流。
->
-> 比如，在这个链条中，用户输入被传递给提示模板，然后提示模板的输出被传递给模型，然后模型的输出被传递给输出解析器。
-
-### 1.3 Runnable
-
-Runnable是LangChain定义的一个抽象接口（Protocol），它`强制要求`所有LCEL组件实现一组标准方法：
-
-```python
-class Runnable(Protocol):
-    def invoke(self, input: Any) -> Any: ...        # 单输入单输出
-    def batch(self, inputs: List[Any]) -> List[Any]: ...  # 批量处理
-    def stream(self, input: Any) -> Iterator[Any]: ...    # 流式输出
-    # 还有其他方法如 ainvoke（异步）等...
-```
-
-任何实现了这些方法的对象都被视为LCEL兼容组件。
-
-
-
-**2、为什么需要统一调用方式？**
-
-**传统问题**
-
-假设没有统一协议：
-
-- 提示词渲染用 `.format()`
-- 模型调用用 `.generate()`
-- 解析器解析用 `.parse()`
-- 工具调用用 `.run()`
-
-代码会变成：
-
-```python
-prompt_text = prompt.format(topic="猫")  # 方法1
-model_out = model.generate(prompt_text)  # 方法2
-result = parser.parse(model_out)         # 方法3
-```
-
-**痛点**：每个组件调用方式不同，组合时需要手动适配。
-
-**3、LCEL解决方案**
-
-通过 `Runnable` 协议统一：
-
-```python
-#（分步调用）
-prompt_text = prompt.invoke({"topic": "猫"})  # 方法1
-model_out = model.invoke(prompt_text)  # 方法2
-result = parser.invoke(model_out)         # 方法3
-
-#（LCEL管道式）
-chain = prompt | model | parser  # 用管道符组合
-result = chain.invoke({"topic": "猫"})  # 所有组件统一用invoke
-```
-
-- **一致性**：无论组件的功能多复杂（模型/提示词/工具），调用方式完全相同
-- **组合性**：管道操作符 `|` 背后自动处理类型匹配和中间结果传递
-
-### 1.4 使用举例
-
-举例1：
-
-情况1：没有使用chain
-
-```Python
-from langchain_core.output_parsers import StrOutputParser
-from langchain_openai import ChatOpenAI
-from langchain.prompts import PromptTemplate
-import os
-import dotenv
-dotenv.load_dotenv()
-
-os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY1")
-os.environ["OPENAI_BASE_URL"] = os.getenv("OPENAI_BASE_URL")
-
-chat_model = ChatOpenAI(
-    model = "gpt-4o-mini"
-)
-
-
-prompt_template = PromptTemplate.from_template(
-    template = "给我讲一个关于{topic}话题的简短笑话"
-)
-
-parser = StrOutputParser()
-
-prompt_value = prompt_template.invoke({"topic":"冰淇淋"})
-
-result = chat_model.invoke(prompt_value)
-
-out_put = parser.invoke(result)
-
-print(out_put)
-print(type(out_put))
-```
-
-> 当然可以！这是一个关于冰淇淋的小笑话：
->
-> 为什么冰淇淋总是很开心？
->
-> 因为它总是能被“吃”到快乐的地方！🍦😄
-> <class 'str'>
-
-情况2：使用chain：将提示模板、模型、解析器链接在一起。使用LCEL将不同的组件组合成一个单一的链条
-
-```python
-from dotenv import load_dotenv
-from langchain_core.output_parsers import StrOutputParser
-
-load_dotenv()
-chat_model = ChatOpenAI(model="gpt-4o-mini")
-
-prompt_template = PromptTemplate.from_template(
-    template = "给我讲一个关于{topic}话题的简短笑话"
-)
-
-parser = StrOutputParser()
-
-# 构建链式调用（LCEL语法）
-chain = prompt_template | chat_model | parser
-out_put = chain.invoke({"topic": "ice cream"})
-print(out_put)
-print(type(out_put))
-```
-
-![img](images/LCEL-chain.png)
-
-> 为什么冰淇淋总是很快乐？
->
-> 因为它知道自己是个“甜”角色！🍦😄
-> <class 'str'>
-
-## 2、传统Chain的使用
-
-### 2.1 基础链：LLMChain
-
-#### 2.1.1 使用说明
-
-LCEL之前，最基础也最常见的链类型是LLMChain。
-
-**这个链至少包括一个提示模板（PromptTemplate），一个语言模型（LLM 或聊天模型）。**
+## 一、`Chains`的基本使用
+1. `Chain`的基本概念
+   - `Chain`：链，用于将多个组件（提示模板、LLM模型、记忆、工具等）连接起来，形成可复用的`工作流`，完成复杂的任务
+   - `Chain`的核心思想是通过组合不同的模块化单元，实现比单一组件更强大的功能。
+2. 构建一个典型的链式服务主要包括如下4个部分
+   - 将`LLM`与`Prompt Template`（提示模板）结合 
+   - 将`LLM`与`外部数据`结合，例如用于问答
+   - 将`LLM`与`长期记忆`结合，例如用于聊天历史记录
+   - 通过将`第一个LLM`的输出作为`第二个LLM`的输入，将多个`LLM`按顺序结合在一起
+3. `LCEL`（`LangChain Expression Languag`）：`LangChain`表达式语言是一种声明式方法，可以轻松地将多个组件链接成AI工作流。它通过`Python`原生操作符（如管道符`|`）将组件连接成可执行流程，显著简化了AI应用的开发
+   - `LCEL`的基本构成：提示（`Prompt`）+ 模型（`Model`）+ 输出解析器（`OutputParser`）
+   - 案例：
+     ```python
+     chain = prompt | model | output_parser
+     chain.invoke({"input":"What's your name?"})
+     ```
+     - `Prompt`：`Prompt`是一个`BasePromptTemplate`，这意味着它接受一个模板变量的字典并生成一个` PromptValue`。`PromptValue`可以传递给`LLM`（它以字符串作为输入）或`ChatModel`（它以消息序列作为输入）
+     - `Model`：将`PromptValue`传递给`model`。如果我们的`model`是一个`ChatModel`，这意味着它将输出一个`BaseMessage`
+     - `OutputParser`：将`model`的输出传递给`output_parser`，它是一个`BaseOutputParser`，意味着它可以接受字符串或`BaseMessage`作为输入
+     - `chain`：我们可以使用`|`运算符轻松创建这个`Chain`，`|`运算符在`LangChain`中用于将两个元素组合在一起。 
+     - `invoke`：所有`LCEL`对象都实现`Runnable`协议，保证一致的调用方式（`invoke`/`batch`/`stream`）
+   - 原理：`Runnable`是`LangChain`定义的一个抽象接口（`Protocol`），它`强制要求`所有`LCEL`组件实现一组标准方法：
+     ```python
+     class Runnable(Protocol):
+         def invoke(self, input: Any) -> Any: ...        # 单输入单输出
+         def batch(self, inputs: List[Any]) -> List[Any]: ...  # 批量处理
+         def stream(self, input: Any) -> Iterator[Any]: ...    # 流式输出
+         # 还有其他方法如 ainvoke（异步）等...
+     ```
+   - `Runnable`协议统一的好处：
+     - 一致性：无论组件的功能多复杂（模型/提示词/工具），调用方式完全相同
+     - 组合性：管道操作符 `|` 背后自动处理类型匹配和中间结果传递
+   - 完整示例：
+     ```python
+     from dotenv import load_dotenv
+     from langchain_core.output_parsers import StrOutputParser
+     
+     load_dotenv()
+     chat_model = ChatOpenAI(model="gpt-4o-mini")
+     prompt_template = PromptTemplate.from_template(
+        template = "给我讲一个关于{topic}话题的简短笑话"
+     )
+     parser = StrOutputParser()
+
+     # 构建链式调用（LCEL语法）
+     chain = prompt_template | chat_model | parser
+     out_put = chain.invoke({"topic": "ice cream"})
+     print(out_put)
+     print(type(out_put))
+     ```
+
+## 二、传统`Chain`的使用（驼峰式命名）
+1. `LLMChain`：这个链至少包括一个提示模板（`PromptTemplate`），一个语言模型（LLM 或聊天模型）。**
 
 > 注意：LLMChain was deprecated in LangChain 0.1.17 and will be removed in 1.0. Use  `prompt | llm` instead。
 
@@ -1037,7 +904,7 @@ print(res["output_text"])
 
 
 
-## 3、基于LCEL构建的Chains的类型
+## 三、基于`LCEL`构建的`Chains`的类型（小写 + 下划线的命名方式）
 
 前面讲解的都是Legacy Chains，下面看最新的基于LCEL构建的Chains。
 
@@ -1183,3 +1050,6 @@ chain.invoke({"docs": docs})
 > '香蕉是黄色的水果，通常在成熟时呈现明亮的黄色。你提到的描述“白色的水果”可能是对香蕉未成熟状态的误解。在成熟阶段，它们大多数情况下是黄色的。'
 
 
+------
+参考资料：
+1. 尚硅谷B站视频：https://www.bilibili.com/video/BV1ZppNzHEY4

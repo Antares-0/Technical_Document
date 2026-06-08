@@ -1,153 +1,92 @@
 # 第04章：LangChain使用之Memory
 
-讲师：尚硅谷-宋红康
 
-官网：[尚硅谷](http://www.atguigu.com/)
-
-***
-
-## 1、Memory概述
-
-### 1.1 为什么需要Memory
-
-大多数的大模型应用程序都会有一个会话接口，允许我们进行多轮的对话，并有一定的上下文记忆能力。
-
-![image-20250304105140008](images/image-20250304105140008.png)
-
-但实际上，模型本身是`不会记忆`任何上下文的，只能依靠用户本身的输入去产生输出。
-
-![image.png](images/d000c58e-e3ba-43d1-9fac-92db199741f4.png)
-
-**如何解决记忆问题？**
-
-实现这个记忆功能，就需要`额外的模块`去保存我们和模型对话的上下文信息，然后在下一次请求时，把所有的历史信息都输入给模型，让模型输出最终结果。
-
-而在 LangChain 中，提供这个功能的模块就称为 `Memory（记忆）`，用于存储用户和模型交互的历史信息。
-
-
-
-### 1.2 什么是Memory
-
-**Memory，是LangChain中用于多轮对话中保存和管理上下文信息的组件**。它让应用能够记住用户之前说了什么，从而实现对话的`上下文感知能力`，为构建真正智能和上下文感知的链式对话系统提供了基础。
-
-### 1.3 Memory的设计理念
-
-![img](images/072f50d5b390baea4eab6ed504dec7e0.png)
-
-1. 输入问题：({"question": ...})
-2. 读取历史消息：从Memory中READ历史消息（{"past_messages": [...]}）
-3. 构建提示（Prompt)：读取到的历史消息和当前问题会被合并，构建一个新的Prompt
-4. 模型处理：构建好的提示会被传递给语言模型进行处理。语言模型根据提示生成一个输出。
-5. 解析输出：输出解析器通过正则表达式 regex("Answer: (.*)")来解析，返回一个回答（{"answer": ...}）给用户
-6. 得到回复并写入Memory：新生成的回答会与当前的问题一起写入Memory，更新对话历史。Memory会存储最新的对话内容，为后续的对话提供上下文支持。
-
-
-
-**问题：**一个链如果接入了`Memory`模块，其会与Memory模块交互几次呢？
-
-链内部会与`Memory`模块进行两次交互：读取和写入：
-
-1、收到用户输入时，从记忆组件中查询相关历史信息，拼接历史信息和用户的输入到提示词中传给LLM。
-
-2、返回响应之前，自动把LLM返回的内容写入到记忆组件，用于下次查询。
-
-### 1.4 Memory 的几个关键功能
-
-- 存储之前对话，用于后续链的输入。这使得`后续的链`可以感知到之前的上下文。
-- 允许链访问和操作`共享的内存`，实现链之间的协作。
-- 可以`存储各种数据类型`，如文本、图像、音频等。
-- 可以存储链的中间执行状态，实现`断点恢复`等功能。
-- 可以用于实现对话系统的用户个性化、任务跟踪等功能。
-- 可以`存储验证信息`，确保链只依据可信来源生成输出。
-
-## 2、基础Memory模块的使用
-
-### 2.1 Memory模块的设计思路
-
-**如何设计Memory模块？**
-
-层次1：保留一个聊天消息列表
-
-层次2：（设计一个简单的记忆模块）只返回最近交互的k条消息
-
-层次3：（稍微复杂一点）记忆模块需要返回过去K条消息的简洁摘要
-
-层次4：（更复杂）从存储的消息中提取实体，并且仅返回有关当前运行中引用的实体的信息
-
-
-
-**LangChain的设计：**
-
-针对上述情况，LangChain构建了一些可以直接使用的`Memory`工具，用于存储聊天消息的一系列集成。
-
-![image-20250614161042858](images/image-20250614161042858.png)
-
-
-
-### 2.2 ChatMessageHistory(基础)
-
-**概念**：ChatMessageHistory是一个用于`存储和管理对话消息`的基础类，它直接操作消息对象（如 HumanMessage, AIMessage 等），是其它记忆组件的底层存储工具。
-
-在API文档中，ChatMessageHistory 还有一个别名类：InMemoryChatMessageHistory
-
-**特点**：
-
-- 不涉及消息的格式化（如转成文本字符串）
-- 纯粹是消息对象的“`存储器`”，与记忆策略（如缓冲、窗口、摘要等）无关。
-
-
-
-#### 场景1：记忆存储
-
-ChatMessageHistory是用于管理和存储对话历史的具体实现。
-
-```python
-#1.导入相关包
-from langchain.memory import ChatMessageHistory
-
-#2.实例化ChatMessageHistory对象
-history = ChatMessageHistory()
-
-# 3.添加UserMessage
-history.add_user_message("hi!")
-
-# 4.添加AIMessage
-history.add_ai_message("whats up?")
-
-# 5.返回存储的所有消息列表
-history.messages
-```
-
-> [HumanMessage(content='hi!', additional_kwargs={}, response_metadata={}),
->  AIMessage(content='whats up?', additional_kwargs={}, response_metadata={})]
-
-#### 场景2：对接LLM
-
-``` python
-from langchain.memory import ChatMessageHistory
-
-history = ChatMessageHistory()
-
-history.add_ai_message("我是一个无所不能的小智")
-history.add_user_message("你好，我叫小明，请介绍一下你自己")
-history.add_user_message("我是谁呢？")
-
-print(history.messages)  #返回List[BaseMessage]类型
-```
-
-> [AIMessage(content='我是一个无所不能的小智', additional_kwargs={}, response_metadata={}), HumanMessage(content='你好，我叫小明，请介绍一下你自己', additional_kwargs={}, response_metadata={}), HumanMessage(content='我是谁呢？', additional_kwargs={}, response_metadata={})]
-
-继续
-
-``` python
-# 创建LLM
-llm = ChatOpenAI(model_name='gpt-4o-mini')
-
-llm.invoke(history.messages)
-```
-
->AIMessage(content='你好，小明！我是一个人工智能助手，旨在为你提供信息、回答问题，以及帮助你解决各种问题。你可以问我任何事情，无论是关于知识、学习还是生活中的实际问题，我都会尽力帮助你！你今天想聊些什么呢？', additional_kwargs={'refusal': None}, response_metadata={'token_usage': {'completion_tokens': 59, 'prompt_tokens': 36, 'total_tokens': 95, 'completion_tokens_details': {'accepted_prediction_tokens': 0, 'audio_tokens': 0, 'reasoning_tokens': 0, 'rejected_prediction_tokens': 0}, 'prompt_tokens_details': {'audio_tokens': 0, 'cached_tokens': 0}}, 'model_name': 'gpt-4o-mini-2024-07-18', 'system_fingerprint': 'fp_efad92c60b', 'id': 'chatcmpl-BpnIMSTuLSRcmpJJlIfVmPWB8hGhW', 'service_tier': None, 'finish_reason': 'stop', 'logprobs': None}, id='run--cd9b5546-0799-47d2-9c0f-ac35aa78e9b1-0', usage_metadata={'input_tokens': 36, 'output_tokens': 59, 'total_tokens': 95, 'input_token_details': {'audio': 0, 'cache_read': 0}, 'output_token_details': {'audio': 0, 'reasoning': 0}})
-
+## 一、`Memory`概述
+1. 为什么需要`Memory`：大多数的大模型应用程序都会有一个会话接口，允许我们进行多轮的对话，并有一定的上下文记忆能力
+   - 实际上，模型本身是不会记忆任何上下文的，只能依靠用户本身的输入去产生输出
+   - 如何解决记忆问题？
+     实现这个记忆功能，就需要额外的模块去保存我们和模型对话的上下文信息，然后在下一次请求时，把所有的历史信息都输入给模型，让模型输出最终结果
+     在`LangChain`中，提供这个功能的模块就称为`Memory（记忆）`，用于存储用户和模型交互的历史信息
+2. 什么是`Memory`
+   - `Memory`，是`LangChain`中用于多轮对话中保存和管理上下文信息的组件。它让应用能够记住用户之前说了什么，从而实现对话的`上下文感知能力`，为构建真正智能和上下文感知的链式对话系统提供了基础
+3. `Memory`的设计理念
+
+   ![img](images/memoryModel.png)
+   - 输入问题：`({"question": ...})`
+   - 读取历史消息：从`Memory`中读取历史消息`{"past_messages": [...]}`）
+   - 构建提示：读取到的历史消息和当前问题会被合并，构建一个新的`Prompt`
+   - 模型处理：构建好的提示会被传递给语言模型进行处理。语言模型根据提示生成一个输出
+   - 解析输出：输出解析器通过正则表达式`regex("Answer: (.*)")`来解析，返回一个回答`{"answer": ...}`给用户
+   - 得到回复并写入`Memory`：新生成的回答会与当前的问题一起写入`Memory`，更新对话历史。`Memory`会存储最新的对话内容，为后续的对话提供上下文支持
+4. `Memory`的几个关键功能
+   - 存储之前对话，用于后续链的输入。这使得后续的链可以感知到之前的上下文
+   - 允许链访问和操作共享的内存，实现链之间的协作
+   - 可以存储各种数据类型，如文本、图像、音频等
+   - 可以存储链的中间执行状态，实现断点恢复等功能
+   - 可以用于实现对话系统的用户个性化、任务跟踪等功能
+   - 可以存储验证信息，确保链只依据可信来源生成输出
+5. `Memory`模块设计
+   - 层级设计规则
+     - 层次1：保留一个聊天消息列表
+     - 层次2：（设计一个简单的记忆模块）只返回最近交互的几条消息
+     - 层次3：（稍微复杂一点）记忆模块需要返回过去几条消息的简洁摘要
+     - 层次4：（更复杂）从存储的消息中提取实体，并且仅返回有关当前运行中引用的实体的信息
+   - 针对上述情况，`LangChain`构建了一些可以直接使用的`Memory`工具，用于存储聊天消息的一系列集成
+   
+     ![](images/memoryClass.png)
+
+
+## 二、基础`Memory`模块的使用
+1. `InMemoryChatMessageHistory`是`LangChain Core`官方主推的内存对话历史存储类，用来临时保存一轮会话里的所有消息（用户说的、`AI`回复的），重启即丢、轻量无依赖、开发测试首选
+   - 纯内存消息队列，只负责存、取、清空消息，不做摘要、不做窗口截断（要自己封装）
+   - 内部就是一个普通列表：
+     ```python
+     class InMemoryChatMessageHistory(BaseChatMessageHistory, BaseModel):
+         """
+         In memory implementation of chat message history.
+         Stores messages in a memory list.
+         """
+
+         messages: list[BaseMessage] = Field(default_factory=list)
+     ```
+   - 特点
+     - 零依赖：不用`Redis`、数据库，开箱即用
+     - 速度快：内存读写，无网络或者IO开销
+     - `API`干净：只做存储，不掺杂复杂逻辑
+     - 官方维护：`langchain_core`核心包，长期支持
+     - 不持久化：服务重启、进程退出，历史全丢
+     - 单实例：多进程、多机器部署时，各自有独立记忆，无法共享
+   - 案例：
+     ```python
+     import dotenv
+     from langchain_openai import ChatOpenAI
+     from langchain_core.chat_history import InMemoryChatMessageHistory
+     import os
+     
+     dotenv.load_dotenv()  #加载当前目录下的 .env 文件
+     
+     os.environ['OPENAI_API_KEY'] = os.getenv("OPENAI_API_KEY1")
+     os.environ['OPENAI_BASE_URL'] = os.getenv("OPENAI_BASE_URL")
+     
+     # 创建大模型实例
+     llm = ChatOpenAI(
+         model="gpt-4o-mini",
+         base_url=os.getenv("OPENAI_BASE_URL"),
+         api_key=os.getenv("OPENAI_API_KEY")
+     )
+     
+     history = InMemoryChatMessageHistory()
+     history.add_user_message("你好")
+     history.add_ai_message("很高兴认识你")
+     history.add_user_message("帮我计算1+1+2")
+     
+     print(llm.invoke(history.messages))
+     
+     # content='1 + 1 + 2 = 4。' additional_kwargs={'refusal': None} response_metadata={'token_usage': {'completion_tokens': 12, 'prompt_tokens': 29, 'total_tokens': 41, 'completion_tokens_details': {'accepted_prediction_tokens': 0, 'audio_tokens': 0, 'reasoning_tokens': 0, 'rejected_prediction_tokens': 0}, 'prompt_tokens_details': {'audio_tokens': 0, 'cached_tokens': 0}, 'latency_checkpoint': {'engine_tbt_ms': 8, 'engine_ttft_ms': 34, 'engine_ttlt_ms': 134, 'pre_inference_ms': 68, 'service_tbt_ms': 9, 'service_ttft_ms': 167, 'service_ttlt_ms': 263, 'total_duration_ms': 203, 'user_visible_ttft_ms': 99}}, 'model_provider': 'openai', 'model_name': 'gpt-4o-mini-2024-07-18', 'system_fingerprint': 'fp_4dcfea0a44', 'id': 'chatcmpl-DoJjJv5cbhmeq6OAGL6fga8E8f5Lz', 'service_tier': 'default', 'finish_reason': 'stop', 'logprobs': None} id='lc_run--019ea4fe-a580-72b1-970d-b6a0970e7da8-0' tool_calls=[] invalid_tool_calls=[] usage_metadata={'input_tokens': 29, 'output_tokens': 12, 'total_tokens': 41, 'input_token_details': {'audio': 0, 'cache_read': 0}, 'output_token_details': {'audio': 0, 'reasoning': 0}}
+     ```
+
+
+    
 
 
 ### 2.3 ConversationBufferMemory
@@ -1159,5 +1098,8 @@ print(memory.load_memory_variables({}))
 
 
 
-
+------
+参考资料
+1. 尚硅谷B站视频：https://www.bilibili.com/video/BV1ZppNzHEY4
+2. 
 

@@ -3007,3 +3007,9 @@ print(response.content)
 > AIMessage(content='尚硅谷教育科技有限公司的总部地址是：北京市海淀区中关村软件园创新大厦B座5层。', additional_kwargs={'refusal': None}, response_metadata={'token_usage': {'completion_tokens': 31, 'prompt_tokens': 1348, 'total_tokens': 1379, 'completion_tokens_details': {'accepted_prediction_tokens': 0, 'audio_tokens': 0, 'reasoning_tokens': 0, 'rejected_prediction_tokens': 0}, 'prompt_tokens_details': {'audio_tokens': 0, 'cached_tokens': 0}}, 'model_name': 'gpt-4o-2024-11-20', 'system_fingerprint': 'fp_ee1d74bde0', 'id': 'chatcmpl-BwsYEyERSjGxMNuHeniFJ6AykVs8e', 'service_tier': None, 'finish_reason': 'stop', 'logprobs': None}, id='run--fef4581a-268f-440d-84a4-4cdbbafdfd30-0', usage_metadata={'input_tokens': 1348, 'output_tokens': 31, 'total_tokens': 1379, 'input_token_details': {'audio': 0, 'cache_read': 0}, 'output_token_details': {'audio': 0, 'reasoning': 0}})
 >
 
+
+------
+参考资料
+1. 尚硅谷B站视频：https://www.bilibili.com/video/BV1ZppNzHEY4
+2. 
+

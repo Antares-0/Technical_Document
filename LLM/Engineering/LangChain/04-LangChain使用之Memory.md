@@ -84,14 +84,7 @@
      
      # content='1 + 1 + 2 = 4。' additional_kwargs={'refusal': None} response_metadata={'token_usage': {'completion_tokens': 12, 'prompt_tokens': 29, 'total_tokens': 41, 'completion_tokens_details': {'accepted_prediction_tokens': 0, 'audio_tokens': 0, 'reasoning_tokens': 0, 'rejected_prediction_tokens': 0}, 'prompt_tokens_details': {'audio_tokens': 0, 'cached_tokens': 0}, 'latency_checkpoint': {'engine_tbt_ms': 8, 'engine_ttft_ms': 34, 'engine_ttlt_ms': 134, 'pre_inference_ms': 68, 'service_tbt_ms': 9, 'service_ttft_ms': 167, 'service_ttlt_ms': 263, 'total_duration_ms': 203, 'user_visible_ttft_ms': 99}}, 'model_provider': 'openai', 'model_name': 'gpt-4o-mini-2024-07-18', 'system_fingerprint': 'fp_4dcfea0a44', 'id': 'chatcmpl-DoJjJv5cbhmeq6OAGL6fga8E8f5Lz', 'service_tier': 'default', 'finish_reason': 'stop', 'logprobs': None} id='lc_run--019ea4fe-a580-72b1-970d-b6a0970e7da8-0' tool_calls=[] invalid_tool_calls=[] usage_metadata={'input_tokens': 29, 'output_tokens': 12, 'total_tokens': 41, 'input_token_details': {'audio': 0, 'cache_read': 0}, 'output_token_details': {'audio': 0, 'reasoning': 0}}
      ```
-
-
-    
-
-
-### 2.3 ConversationBufferMemory
-
-ConversationBufferMemory是一个基础的`对话记忆（Memory）组件`，专门用于按`原始顺序存储`完整的对话历史。它的核心特点是`简单`、`无裁剪`、`无压缩`，适用于需要完整上下文的小规模对话场景。
+2. `ConversationBufferMemory`是一个基础的对话记忆组件，专门用于按原始顺序存储完整的对话历史。它的核心特点是简单、无裁剪、无压缩，适用于需要完整上下文的小规模对话场景。
 
 
 
@@ -284,11 +277,11 @@ print(res2)
 
  **二者对比**
 
-| 特性         | 普通 PromptTemplate                 | ChatPromptTemplate                  |      |
-| :----------- | ----------------------------------- | :---------------------------------- | :--- |
-| 历史存储时机 | 仅执行后存储                        | 执行前存储用户输入 + 执行后存储输出 |      |
-| 首次调用显示 | 仅显示问题（历史仍为<br/>空字符串） | 显示完整问答对                      |      |
-| 内部消息类型 | 拼接字符串                          | `List[BaseMessage]`                 |      |
+| 特性         | 普通 PromptTemplate                 | ChatPromptTemplate                  |
+| :----------- | ----------------------------------- | :---------------------------------- |
+| 历史存储时机 | 仅执行后存储                        | 执行前存储用户输入 + 执行后存储输出 |
+| 首次调用显示 | 仅显示问题（历史仍为<br/>空字符串） | 显示完整问答对                      |
+| 内部消息类型 | 拼接字符串                          | `List[BaseMessage]`                 |
 
 **注意**：
 
@@ -723,7 +716,7 @@ print(memory.load_memory_variables({}))
 
 > 前面的方式发现，如果全部保存下来太过浪费，截断时无论是按照`对话条数`还是`token`都是无法保证既节省内存或token又保证对话质量的，所以推出ConversationSummaryMemory、ConversationSummaryBufferMemory
 
-ConversationSummaryMemory是 LangChain 中一种`智能压缩对话历史`的记忆机制，它通过大语言模型(LLM)自动生成对话内容的`精简摘要`，而不是存储原始对话文本。
+ConversationSummaryMemory是 LangChain 中一种智能压缩对话历史的记忆机制，它通过大语言模型(LLM)自动生成对话内容的精简摘要，而不是存储原始对话文本。
 
 这种记忆方式特别适合**长对话**和**需要保留核心信息**的场景。
 
@@ -924,7 +917,7 @@ print("3. load_memory_variables:", memory.load_memory_variables({}))
 
 ### 3.3 ConversationSummaryBufferMemory  
 
-ConversationSummaryBufferMemory 是 LangChain 中一种**混合型记忆机制**，它结合了 ConversationBufferMemory（完整对话记录）和 ConversationSummaryMemory（摘要记忆）的优点，在保留最近对话原始记录的同时，对较早的对话内容进行智能摘要。
+ConversationSummaryBufferMemory 是 LangChain 中一种混合型记忆机制，它结合了 ConversationBufferMemory（完整对话记录）和 ConversationSummaryMemory（摘要记忆）的优点，在保留最近对话原始记录的同时，对较早的对话内容进行智能摘要。
 
 **特点**：
 
@@ -1095,6 +1088,306 @@ print(memory.load_memory_variables({}))
 > === 当前记忆内容 ===
 > {'chat_history': [SystemMessage(content='The human inquires about the status of order 12345. The AI thanks the human for reaching out and offers to check the order status, asking for a moment. The human provides that the order was placed last Friday. The AI acknowledges this information and promises to look into the status, which reveals that the order is currently being processed and is expected to ship within 2-3 business days. The AI assures the human that they will be notified of any updates and invites further questions. The human expresses urgency for the order and asks if it can be expedited. The AI empathizes but explains that order processing and shipping times are typically managed by the system and warehouse, suggesting the human contact customer service for potential expedited processing and to provide the order number for quicker assistance. The AI remains open to further questions or help.', additional_kwargs={}, response_metadata={}), HumanMessage(content='等等，我可能记错订单号了，应该是12346', additional_kwargs={}, response_metadata={}), AIMessage(content='没问题！我会为您查询订单12346的状态。请稍等片刻。\n\n（假设我能查询到状态）\n\n根据系统显示，您的订单12346目前正在处理，预计将在接下来的2-3个工作日内发货。如果您需要加急处理，建议您联系售后客服，他们会根据实际情况帮您处理。\n\n如果还有其他问题或者需要进一步的帮助，请随时告诉我！', additional_kwargs={}, response_metadata={}), HumanMessage(content='对了，你们退货政策是怎样的', additional_kwargs={}, response_metadata={}), AIMessage(content='我们的退货政策如下：\n\n1. **退货期限**：一般情况下，您可以在收到商品后的7天内申请退货。如果商品有质量问题，您可以在收到商品后的15天内申请退货。\n\n2. **商品状态**：退货的商品必须保持未使用状态，并且要有原包装、标签和发票等。\n\n3. **申请流程**：请您在我们的官方网站或APP上找到“退货申请”入口，填写相关信息并提交申请。我们的客服会尽快与您联系处理。\n\n4. **运费问题**：如果是因为质量问题或发错商品造成的退货，运费由我们承担；其他情况的退货，运费通常由您承担。\n\n如果您还有其他具体问题或需要帮助的地方，请随时告诉我！', additional_kwargs={}, response_metadata={})]}
 > ```
+
+
+
+
+
+### 3.8 ConversationEntityMemory
+
+**概念**：ConversationEntityMemory 是一种**基于实体的对话记忆机制**，它能够智能地识别、存储和利用对话中出现的实体信息，使 AI 对话系统具备更强的上下文理解和记忆能力。
+
+
+
+**特点:**
+
+- 自动提取对话中的**实体**（如人名、地点、产品等）及其**属性/关系**，并结构化存储
+
+- 解决信息过载问题
+
+    - 长对话中大量冗余信息会干扰关键事实记忆
+    - 通过对实体摘要压缩非重要细节（如删除寒暄、保留价格/时间等硬性事实）
+
+- 在医疗等高风险领域，**必须用实体记忆确保关键信息（如过敏史）被100%准确识别和拦截**。
+
+  ```
+  {"input": "我头痛，血压140/90，在吃阿司匹林。"}, 
+  {"output": "建议监测血压，阿司匹林可继续服用。"}
+  {"input": "我对青霉素过敏。"}, 
+  {"output": "已记录您的青霉素过敏史。"}
+  {"input": "阿司匹林吃了三天，头痛没缓解。"}, 
+  {"output": "建议停用阿司匹林，换布洛芬试试。"}
+  ```
+
+  **ConversationSummaryMemory**
+
+  > "患者主诉头痛和高血压（140/90），正在服用阿司匹林。患者对青霉素过敏。三天后头痛未缓解，建议更换止痛药。"
+
+  **ConversationEntityMemory**
+
+  > {
+  > "症状": "头痛",
+  > "血压": "140/90",
+  > "当前用药": "阿司匹林（无效）",
+  > "过敏药物": "青霉素"
+  > }
+
+**下游处理：**
+
+| 维度             | ConversationSummaryMemory                                    | ConversationEntityMemory                                     |
+| :--------------- | :----------------------------------------------------------- | :----------------------------------------------------------- |
+|                  | 自然语言文本（一段话）                                       | 结构化字典（键值对）                                         |
+| 下游如何利用信息 | 需大模型“读懂”摘要文本，<br />如果 AI 的注意力集中在“头痛”和“换药”上，可能会忽略过敏提示（尤其是摘要较长时） | 无需依赖模型的“阅读理解能力”，直接通过字段名（如`过敏药物`）查询 |
+| 防错可靠性       | 低（依赖大模型的注意力）                                     | 高（通过代码强制检查）                                       |
+| 推荐处理         | 可以试试阿莫西林（一种青霉素类药）                           | 完全避免推荐过敏药物                                         |
+
+
+
+**工作原理：**
+
+```
+buffer_string = "用户：我叫张三。\nAI：你好，张三！"
+inputs = {"input": "我今年25岁，在北京工作"}
+```
+
+- 实体识别阶段
+
+```python
+# 识别结果：
+#   实体: 张三(人物)
+#   属性: 年龄=30, 工作地=北京
+```
+
+- 记忆存储阶段
+    - 以键值对形式存储实体属性
+    - 建立实体间关联关系
+
+- 记忆检索阶段
+    - 当对话提及已存储实体时自动唤醒相关记忆
+
+
+
+举例1：
+
+```python
+# 1.导入相关包
+from langchain.chat_models import ChatOpenAI
+from langchain.memory import ConversationEntityMemory
+
+# 2.定义模型
+llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+
+# 3.定义ConversationEntityMemory实体
+memory = ConversationEntityMemory(llm=llm)
+_input = {"input": "steven和Sam正在做一个黑客马拉松项目"}
+memory.load_memory_variables(_input)
+memory.save_context(
+    _input,
+    {"output": "听起来是个很棒的项目！他们在做什么样的项目"}
+)
+
+memory.load_memory_variables({"input": "谁是Sam"})
+
+```
+
+> {'history': 'Human: steven和Sam正在做一个黑客马拉松项目\nAI: 听起来是个很棒的项目！他们在做什么样的项目',
+> 'entities': {'Sam': 'Sam is working on a hackathon project with Steven.'}}
+
+
+
+举例2：
+
+```python
+from langchain_openai import ChatOpenAI
+from langchain.memory import ConversationEntityMemory
+
+# 1. 初始化LLM和记忆模块
+llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+memory = ConversationEntityMemory(llm=llm)
+
+_input = {"input": "steven和Sam正在做一个黑客马拉松项目"}
+#1.获取历史记录的后6条
+#2.用模型提取实体（根据历史记录、当前输入）
+#3.将实体信息缓存起来
+#4.返回实体信息及历史对话的后6条
+
+print(memory.load_memory_variables(_input)) #
+
+
+# 2. 第一轮对话：记录团队成员
+# 2.1.保存本次对话消息
+# 2.2.提取输入的内容
+# 2.3.获取历史对话的后6条
+# 2.4.从缓存中根据实体信息，获取每个实体摘要
+# 2.5.调用模型（传入输出的内容 历史对话的后6条 每个实体 每个实体摘要 ）负责保存/更新对应实体摘要
+# 2.6.在将模型返回的实体摘要存储到缓存中
+
+memory.save_context(
+    {"input": "Steven和Sam正在开发一个AI驱动的无人机项目"},
+    {"output": "听起来很有前景！他们分别负责什么？"}
+)
+
+# 查看当前记忆状态
+print("\n=== 第一轮对话后 ===")
+print(memory.load_memory_variables({"input": "who is Steven"}))
+
+print("实体存储:", memory.entity_store)
+
+
+# 4. 第二轮对话：无关信息测试
+memory.save_context(
+    {"input": "今天天气真好"},
+    {"output": "确实适合测试无人机"}
+)
+
+# 验证无关对话是否影响实体信息
+print("\n=== 第二轮对话后 ===")
+print(memory.load_memory_variables({"input": "who is Steven"}))
+print("实体存储:", memory.entity_store)
+
+# 3. 第二轮对话：更新有关对话 项目细节
+memory.save_context(
+    {"input": "Steven负责飞控算法，Sam做计算机视觉模块"},
+    {"output": "合理的分工，预计什么时候完成？"}
+)
+
+print("\n=== 第三轮对话后 ===")
+print(memory.load_memory_variables({"input": "who is Steven"}))
+print("实体存储:", memory.entity_store)
+```
+
+> {'history': '', 'entities': {'Steven': '', 'Sam': ''}}
+>
+> === 第一轮对话后 ===
+> {'history': 'Human: Steven和Sam正在开发一个AI驱动的无人机项目\nAI: 听起来很有前景！他们分别负责什么？', 'entities': {'Steven': 'Steven is working on an AI-driven drone project with Sam.'}}
+> 实体存储: store={'Steven': 'Steven is working on an AI-driven drone project with Sam.', 'Sam': 'Sam is working on an AI-driven drone project with Steven.'}
+>
+> === 第二轮对话后 ===
+> {'history': 'Human: Steven和Sam正在开发一个AI驱动的无人机项目\nAI: 听起来很有前景！他们分别负责什么？\nHuman: 今天天气真好\nAI: 确实适合测试无人机', 'entities': {'Steven': 'Steven is working on an AI-driven drone project with Sam.'}}
+> 实体存储: store={'Steven': 'Steven is working on an AI-driven drone project with Sam.', 'Sam': 'Sam is working on an AI-driven drone project with Steven.'}
+>
+> === 第三轮对话后 ===
+> {'history': 'Human: Steven和Sam正在开发一个AI驱动的无人机项目\nAI: 听起来很有前景！他们分别负责什么？\nHuman: 今天天气真好\nAI: 确实适合测试无人机\nHuman: Steven负责飞控算法，Sam做计算机视觉模块\nAI: 合理的分工，预计什么时候完成？', 'entities': {'Steven': 'Steven is working on an AI-driven drone project with Sam, focusing on flight control algorithms.'}}
+> 实体存储: store={'Steven': 'Steven is working on an AI-driven drone project with Sam, focusing on flight control algorithms.', 'Sam': 'Sam is working on an AI-driven drone project with Steven.'}
+
+### 3.9 ConversationKGMemory
+
+**概念**：`ConversationKGMemory` 是 LangChain 中一种基于**知识图谱（Knowledge Graph）**的对话记忆模块，它比 `ConversationEntityMemory` 更进一步，不仅能识别和存储实体，还能捕捉实体之间的复杂关系，形成结构化的知识网络。
+
+**特点：**
+
+- **知识图谱结构** 将对话内容转化为 `(头实体, 关系, 尾实体)` 的三元组形式
+- **动态关系推理**
+
+
+
+举例：
+
+```
+pip  install  networkx
+```
+
+
+
+```python
+#1.导入相关包
+from langchain.memory import ConversationKGMemory
+from langchain.chat_models import ChatOpenAI
+
+# 2.定义LLM
+llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+
+# 3.定义ConversationKGMemory对象
+memory = ConversationKGMemory(llm=llm)
+
+# 4.保存会话
+memory.save_context({"input": "向山姆问好"}, {"output": "山姆是谁"})
+memory.save_context({"input": "山姆是我的朋友"}, {"output": "好的"})
+
+# 5.查询会话
+memory.load_memory_variables({"input": "山姆是谁"})
+```
+
+> {'history': 'On 山姆: 山姆 是 我的朋友.'}
+
+```python
+memory.get_knowledge_triplets("她最喜欢的颜色是红色")
+```
+
+> ```
+> [KnowledgeTriple(subject='山姆', predicate='是', object_='我的朋友'),
+> KnowledgeTriple(subject='山姆', predicate='最喜欢的颜色是', object_='红色')]
+> ```
+
+
+
+### 3.10 VectorStoreRetrieverMemory(不讲)
+
+**概念**：`VectorStoreRetrieverMemory` 是 LangChain 中一种基于**向量检索**的先进记忆机制，它将对话历史存储在向量数据库中，通过语义相似度检索相关信息，而非传统的线性记忆方式。每次调用时，就会查找与该记忆关联最高的k个文档。
+
+这种记忆特别适合需要**长期记忆**和**语义理解**的复杂对话系统。
+
+**特点**：
+
+- **语义化记忆存储**
+- **智能检索机制**
+- **长期记忆优化**
+
+**原理**：
+
+![image-20250429152007669](images/image-20250429152007669.png)
+
+
+
+举例：
+
+```python
+import os
+import dotenv
+from langchain_openai import OpenAIEmbeddings
+
+dotenv.load_dotenv()
+
+os.environ['OPENAI_API_KEY'] = os.getenv("OPENAI_API_KEY1")
+os.environ['OPENAI_BASE_URL'] = os.getenv("OPENAI_BASE_URL")
+
+embeddings_model = OpenAIEmbeddings(
+    model="text-embedding-ada-002"
+)
+```
+
+```python
+# 1.导入相关包
+from langchain.embeddings import OpenAIEmbeddings
+from langchain.memory import VectorStoreRetrieverMemory
+from langchain_community.vectorstores import FAISS
+from langchain.memory import ConversationBufferMemory
+
+# 2.定义ConversationBufferMemory对象
+memory = ConversationBufferMemory()
+memory.save_context({"input": "我最喜欢的食物是披萨"}, {"output": "很高兴知道"})
+memory.save_context({"Human": "我喜欢的运动是跑步"}, {"AI": "好的,我知道了"})
+memory.save_context({"Human": "我最喜欢的运动是足球"}, {"AI": "好的,我知道了"})
+
+# 3.定义向量嵌入模型
+embeddings_model = OpenAIEmbeddings(
+    model="text-embedding-ada-002"
+)
+
+# 4.初始化向量数据库
+vectorstore = FAISS.from_texts(memory.buffer.split("\n"), embeddings_model)  # 空初始化
+
+# 5.定义检索对象
+retriever = vectorstore.as_retriever(search_kwargs=dict(k=1))
+
+# 6.初始化VectorStoreRetrieverMemory
+memory = VectorStoreRetrieverMemory(retriever=retriever)
+
+print(memory.load_memory_variables({"prompt": "我最喜欢的食物是"}))
+```
+
+> {'history': 'Human: 我最喜欢的食物是披萨'}
+
 
 
 

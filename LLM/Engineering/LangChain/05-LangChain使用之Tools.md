@@ -1,8 +1,5 @@
 # 第05章：LangChain使用之Tools
 
-讲师：尚硅谷-宋红康
-
-官网：[尚硅谷](http://www.atguigu.com/)
 
 ***
 
@@ -359,5 +356,8 @@ if "move_file" in message.additional_kwargs["function_call"]["name"]:
 
 
 
-
+------
+参考资料
+1. 尚硅谷B站视频：https://www.bilibili.com/video/BV1ZppNzHEY4
+2. 
 
